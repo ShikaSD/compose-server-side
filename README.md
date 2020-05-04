@@ -1,6 +1,8 @@
 # ComposeWebUI
 ## ...or kinda server side rendering using compose
 
+![demo](images/demo.gif)
+
 This is a prototype of porting compose principles to other JVM application rather than Android.
 
 The idea was originally done by [SwiftWebUI](https://github.com/SwiftWebUI/SwiftWebUI) project,
@@ -19,4 +21,4 @@ Add path to the aosp repo to `local.properties` file:
 aosp.location=/location/to/repo/aosp
 ```
 
-Now, you can build the server using `./gradlew :server:build` command or run it using `./gradlew :server:build`.
+Now, you can build the server using `./gradlew :server:build` command or run it using `./gradlew :server:run`.
