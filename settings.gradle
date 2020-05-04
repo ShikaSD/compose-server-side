@@ -1,0 +1,5 @@
+rootProject.name = 'compose-html-server'
+
+include ':server'
+include ':client'
+include ':compose-wrapper'

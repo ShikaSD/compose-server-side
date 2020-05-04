@@ -1,0 +1,17 @@
+plugins {
+    id 'org.jetbrains.kotlin.js'
+}
+
+group 'me.shika'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-js"
+    testImplementation "org.jetbrains.kotlin:kotlin-test-js"
+}
+
+kotlin.target.browser { }
