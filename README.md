@@ -3,20 +3,21 @@
 
 ![demo](images/demo.gif)
 
-This is a prototype of porting compose principles to other JVM application rather than Android.
+This is a prototype of porting compose to ktor server rather than running it on Android.
 
-The idea was originally done by [SwiftWebUI](https://github.com/SwiftWebUI/SwiftWebUI) project,
+The original idea belongs to [SwiftWebUI](https://github.com/SwiftWebUI/SwiftWebUI) project,
 rendering HTML page using websocket commands from server.
 
 ### How it works?
 
-Server renders a webpage, which creates a websocket connection. When connection is established,
-server pushes updates for adding/removing/replacing HTML nodes on the page. In some way, it is similar
-to Virtual DOM, but server side.
+Server renders a web page, which creates a websocket connection. Then, server pushes updates for 
+adding/removing/replacing HTML nodes on the page, while client is pushing events back. 
+In some way, it is similar to Virtual DOM, but server side.
 
 ### Building it
-Build requires you to have aosp repository with compose on your local machine.
-Add path to the aosp repo to `local.properties` file:
+Build requires you to have AOSP repository with compose on your local machine.
+
+Add its path to `local.properties` file:
 ```properties
 aosp.location=/location/to/repo/aosp
 ```
