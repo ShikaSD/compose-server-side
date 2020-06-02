@@ -1,8 +1,17 @@
 package androidx.compose
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.GlobalScope
+
+@OptIn(InternalComposeApi::class)
 internal class ServerRecomposer : Recomposer() {
 
     private var frameScheduled = false
+    override val effectCoroutineScope: CoroutineScope = GlobalScope
+    override val compositionFrameClock: CompositionFrameClock = object : CompositionFrameClock {
+        override suspend fun <R> awaitFrameNanos(onFrame: (frameTimeNanos: Long) -> R): R =
+            onFrame(0)
+    }
 
     inner class Callback : Runnable {
         @Volatile var cancelled: Boolean = false
