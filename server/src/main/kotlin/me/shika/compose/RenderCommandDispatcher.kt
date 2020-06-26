@@ -1,5 +1,6 @@
 package me.shika.compose
 
+import androidx.compose.FrameManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.channels.Channel
@@ -9,6 +10,7 @@ import kotlinx.serialization.ImplicitReflectionSerializer
 import kotlinx.serialization.UnstableDefault
 import me.shika.NodeUpdate
 import me.shika.RenderCommand
+import me.shika.ValueUpdate
 import java.util.concurrent.Executors
 import kotlin.coroutines.CoroutineContext
 
@@ -18,6 +20,7 @@ class RenderCommandDispatcher(
     private val channel: Channel<RenderCommand> = Channel()
 ): CoroutineScope, ReceiveChannel<RenderCommand> by channel {
     private val pendingNodeUpdates = mutableListOf<NodeUpdate>()
+    private val pendingValueUpdates = mutableListOf<ValueUpdate>()
 
     fun insert(parent: HtmlNode, index: Int, node: HtmlNode) {
         pendingNodeUpdates +=
@@ -51,7 +54,15 @@ class RenderCommandDispatcher(
                     count = count
                 )
             )
+    }
 
+    fun update(node: HtmlNode, values: Map<String, String>) {
+        if (node.parent == null) return // ignore if node is not attached, it will be serialized fully when added
+        pendingValueUpdates +=
+            ValueUpdate(
+                node.id,
+                values
+            )
     }
 
     private suspend fun send(command: RenderCommand) {
@@ -59,17 +70,23 @@ class RenderCommandDispatcher(
     }
 
     fun commit() {
-        val updates = pendingNodeUpdates.toList()
+        println("commit")
+        val nodeUpdates = pendingNodeUpdates.toList()
+        val valueUpdates = pendingValueUpdates.toList()
         pendingNodeUpdates.clear()
+        pendingValueUpdates.clear()
 
         launch {
+            if (nodeUpdates.isEmpty() && valueUpdates.isEmpty()) return@launch
             send(
                 RenderCommand(
-                    nodeUpdates = updates,
-                    valueUpdates = emptyList()
+                    nodeUpdates = nodeUpdates,
+                    valueUpdates = valueUpdates
                 )
             )
         }
+
+        FrameManager.nextFrame()
     }
 
     fun dispose() {

@@ -19,6 +19,14 @@ class ServerComposer(
 
     init {
         FrameManager.ensureStarted()
+        addChangesAppliedObserver {
+            commitRenderCommands()
+        }
+    }
+
+    private fun commitRenderCommands() {
+        commandDispatcher.commit()
+        addChangesAppliedObserver { commitRenderCommands() }
     }
 
     inline fun <T : HtmlNode> emit(
@@ -26,7 +34,6 @@ class ServerComposer(
         /*crossinline*/ ctor: (RenderCommandDispatcher) -> T,
         update: ServerUpdater<T>.() -> Unit
     ) {
-        println("emit1 $key")
         startNode(key)
 
         val node = if (inserting) {
@@ -45,7 +52,6 @@ class ServerComposer(
         update: ServerUpdater<T>.() -> Unit,
         children: () -> Unit
     ) {
-        println("emit2 $key")
         startNode(key)
 
         val node = if (inserting) {
@@ -62,10 +68,7 @@ class ServerComposer(
     }
 
     private class ServerApplyAdapter(private val commandDispatcher: RenderCommandDispatcher) : ApplyAdapter<HtmlNode> {
-        private var depth = 0
-
         override fun HtmlNode.start(instance: HtmlNode) {
-            depth++
         }
 
         override fun HtmlNode.insertAt(index: Int, instance: HtmlNode) {
@@ -87,10 +90,6 @@ class ServerComposer(
         }
 
         override fun HtmlNode.end(instance: HtmlNode, parent: HtmlNode) {
-            depth--
-            if (depth == 0) {
-                commandDispatcher.commit()
-            }
         }
 
         private fun HtmlNode.tag() =

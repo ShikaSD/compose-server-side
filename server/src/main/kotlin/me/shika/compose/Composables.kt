@@ -15,19 +15,24 @@ suspend fun composition(
     commandDispatcher: RenderCommandDispatcher,
     composable: @Composable() () -> Unit
 ) = coroutineScope {
-        withContext(composeThreadDispatcher) {
-            val composition = compositionFor(
-                root,
-                Recomposer.current(),
-                composerFactory = { slotTable, recomposer ->
-                    ServerComposer(root, slotTable, recomposer = recomposer, commandDispatcher = commandDispatcher)
-                }
-            )
+    withContext(composeThreadDispatcher) {
+        val composition = compositionFor(
+            root,
+            Recomposer.current(),
+            composerFactory = { slotTable, recomposer ->
+                ServerComposer(root, slotTable, recomposer = recomposer, commandDispatcher = commandDispatcher)
+            }
+        )
 
-            composition.setContent(composable)
-            composition
-        }
+        composition.setContent(composable)
+        composition
     }
+}
+
+@Composable
+fun div(className: String? = null, children: @Composable() () -> Unit = {}) {
+    tag(tagName = "div", className = className, children = children)
+}
 
 @Composable
 fun h1(className: String? = null, children: @Composable() () -> Unit = {}) {

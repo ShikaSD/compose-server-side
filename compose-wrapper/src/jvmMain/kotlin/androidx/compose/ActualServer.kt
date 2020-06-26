@@ -81,11 +81,11 @@ actual interface ChoreographerFrameCallback {
 
 internal actual object Trace {
     actual fun beginSection(name: String) {
-        // Do nothing.
+        println("Trace: $name")
     }
 
     actual fun endSection() {
-        // Do nothing.
+        println("Trace end")
     }
 }
 

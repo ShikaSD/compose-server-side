@@ -42,10 +42,12 @@ data class NodeUpdate(
 
 @Serializable
 sealed class NodeDescription {
+    abstract val id: Long
+
     @Serializable
     @SerialName("tag")
     data class Tag(
-        val id: Long,
+        override val id: Long,
         val tag: String,
         val attributes: Map<String, String?>,
         val events: List<String>
@@ -54,6 +56,7 @@ sealed class NodeDescription {
     @Serializable
     @SerialName("text")
     data class Text(
+        override val id: Long,
         val value: String
     ): NodeDescription()
 }

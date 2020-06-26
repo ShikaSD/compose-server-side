@@ -57,15 +57,17 @@ fun Application.module() {
             root.eventDispatcher = eventDispatcher
 
             val composition = composition(root, commandDispatcher) {
-                h1(className = "Test") {
-                    text("Hello")
-                }
-                val state = state { 1 }
-                h2 {
-                    text("Counter ${state.value}")
-                }
-                button(text = "Increment!") {
-                    state.value = state.value + 1
+                div {
+                    h1(className = "Test") {
+                        text("Hello")
+                    }
+                    val state = state { 1 }
+                    h2 {
+                        text("Counter ${state.value}")
+                    }
+                    button(text = "Increment!") {
+                        state.value = state.value + 1
+                    }
                 }
             }
 

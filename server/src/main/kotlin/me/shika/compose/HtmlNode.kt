@@ -11,6 +11,7 @@ sealed class HtmlNode {
     open val events: Map<Event, () -> Unit> = emptyMap()
 
     lateinit var eventDispatcher: EventDispatcher
+    var parent: HtmlNode? = null
 
     fun observe(eventDispatcher: EventDispatcher, channel: Channel<EventPayload>) {
         this.eventDispatcher = eventDispatcher
@@ -30,6 +31,7 @@ sealed class HtmlNode {
 
         fun insertAt(index: Int, instance: HtmlNode) {
             children.add(index, instance)
+            instance.parent = this
 
             eventDispatcher.registerNode(instance)
         }
@@ -55,23 +57,39 @@ sealed class HtmlNode {
         fun remove(index: Int, count: Int) {
             repeat(count) {
                 val instance = children.removeAt(index)
+                instance.parent = null
+
                 eventDispatcher.removeNode(instance)
             }
         }
     }
 
-    data class Text(val value: String): HtmlNode()
+    class Text(private val commandDispatcher: RenderCommandDispatcher): HtmlNode() {
+        var value: String = ""
+            set(value) {
+                field = value
+                println("update $this")
+                commandDispatcher.update(
+                    this,
+                    mapOf("value" to value)
+                )
+            }
+
+        override fun toString(): String =
+            "Text(id=$id, value=$value)"
+    }
 
     fun toDescription(): NodeDescription =
         when (this) {
             is Tag -> NodeDescription.Tag(
-                id,
-                tag,
-                attributes,
-                events.keys.map { it.type }
+                id = id,
+                tag = tag,
+                attributes = attributes,
+                events = events.keys.map { it.type }
             )
             is Text -> NodeDescription.Text(
-                value
+                id = id,
+                value = value
             )
         }
 
