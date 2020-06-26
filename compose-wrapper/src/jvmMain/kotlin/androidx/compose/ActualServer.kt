@@ -1,10 +1,28 @@
 package androidx.compose
 
-import java.util.concurrent.*
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.withContext
+import java.util.concurrent.Executors
+import java.util.concurrent.ScheduledExecutorService
+import java.util.concurrent.ThreadFactory
+import java.util.concurrent.TimeUnit
 
 actual abstract class EmbeddingUIContext
 
 actual class Looper
+
+internal actual object LooperWrapper {
+    private val mainLooper = Looper()
+    actual fun getMainLooper(): Looper = mainLooper
+}
+
+internal actual class Handler actual constructor(looper: Looper) {
+    actual fun post(block: () -> Unit): Boolean {
+        composeThreadExecutor.execute(block)
+        return true
+    }
+}
 
 private val threadFactory = object : ThreadFactory {
     @Volatile
@@ -15,21 +33,22 @@ private val threadFactory = object : ThreadFactory {
             .also { currentThread = it }
 }
 val composeThreadExecutor: ScheduledExecutorService = Executors.newSingleThreadScheduledExecutor(threadFactory)
+private val composeThreadDispatcher = composeThreadExecutor.asCoroutineDispatcher()
 
 internal actual fun isMainThread(): Boolean =
     Thread.currentThread() == threadFactory.currentThread
 
-internal actual object LooperWrapper {
-    private val mainLooper = Looper()
-    actual fun getMainLooper(): Looper = mainLooper
-}
+internal actual fun mainThreadCompositionDispatcher(): CoroutineDispatcher =
+    composeThreadDispatcher
 
-internal actual class Handler {
-    actual constructor(looper: Looper) {}
-    actual fun postAtFrontOfQueue(block: () -> Unit): Boolean {
-        composeThreadExecutor.execute(block)
-        return true
-    }
+internal actual fun mainThreadCompositionFrameClock(): CompositionFrameClock =
+    CompositionClock
+
+private object CompositionClock : CompositionFrameClock {
+    override suspend fun <R> withFrameNanos(onFrame: (frameTimeNanos: Long) -> R): R =
+        withContext(composeThreadDispatcher) {
+            onFrame(System.nanoTime())
+        }
 }
 
 internal actual object Choreographer {
@@ -46,7 +65,7 @@ internal actual object Choreographer {
     }
     actual fun postFrameCallbackDelayed(delayMillis: Long, callback: ChoreographerFrameCallback) {
         composeThreadExecutor.schedule(
-            Runnable { callback.doFrame(0) },
+            { callback.doFrame(System.nanoTime()) },
             delayMillis,
             TimeUnit.MILLISECONDS
         )
@@ -119,7 +138,9 @@ internal actual fun recordSourceKeyInfo(key: Any) {
 
 actual fun keySourceInfoOf(key: Any): String? = keyInfo[key]
 
-internal actual fun createRecomposer(): Recomposer = ServerRecomposer()
+actual fun resetSourceInfo() {
+    keyInfo.clear()
+}
 
 actual annotation class MainThread()
 actual annotation class CheckResult(actual val suggest: String)

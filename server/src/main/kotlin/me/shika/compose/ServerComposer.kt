@@ -1,7 +1,8 @@
+@file:OptIn(ExperimentalComposeApi::class)
+
 package me.shika.compose
 
 import androidx.compose.*
-import java.lang.IllegalStateException
 
 typealias ServerUpdater<T> = ComposerUpdater<HtmlNode, T>
 

@@ -3,3 +3,9 @@ rootProject.name = 'compose-html-server'
 include ':server'
 include ':client'
 include ':compose-wrapper'
+
+sourceControl {
+    gitRepository("file://Users/andreishikov/projects/test/aosp/frameworks/support/compose/") {
+        producesModule("compose:compose")
+    }
+}

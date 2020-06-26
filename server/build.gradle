@@ -25,7 +25,7 @@ dependencies {
     implementation "ch.qos.logback:logback-classic:1.2.3"
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.20.0"
 
-    kotlinCompilerPluginClasspath "androidx.compose:compose-compiler:0.1.0-dev12"
+    kotlinCompilerPluginClasspath "androidx.compose:compose-compiler:0.1.0-dev14"
 }
 
 task copyClientFiles(type: Copy) {
