@@ -1,15 +1,15 @@
 package me.shika.compose
 
+import androidx.compose.composeThreadDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.JsonObject
+import me.shika.ClientEvent
 import java.util.*
-import java.util.concurrent.ConcurrentHashMap
 import kotlin.coroutines.CoroutineContext
 
 class EventDispatcher : CoroutineScope {
-    override val coroutineContext: CoroutineContext = ComposeThreadDispatcher
+    override val coroutineContext: CoroutineContext = composeThreadDispatcher
 
     private val nodeEventChannels = WeakHashMap<Long, Channel<EventPayload>>()
 
@@ -35,10 +35,9 @@ class EventDispatcher : CoroutineScope {
 }
 
 class EventProcessor(val dispatcher: EventDispatcher) {
-    fun process(event: JsonObject) {
-        if (event["type"]?.primitive?.content == "click") {
-            val id = event["id"]?.primitive?.long ?: return
-            val event = EventPayload(targetId = id, payload = Event.Click)
+    fun process(event: ClientEvent) {
+        if (event.name == "click") {
+            val event = EventPayload(targetId = event.targetId, payload = Event.Click)
             dispatcher.dispatchEvent(event)
         }
     }

@@ -1,9 +1,12 @@
 package me.shika.compose
 
-import androidx.compose.*
-import kotlinx.coroutines.*
+import androidx.compose.Composable
+import androidx.compose.Recomposer
+import androidx.compose.composeThreadDispatcher
+import androidx.compose.compositionFor
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.withContext
 
-val ComposeThreadDispatcher = composeThreadExecutor.asCoroutineDispatcher()
 val composer: ServerComposer
     get() = throw IllegalStateException("Required for compiler")
 
@@ -12,7 +15,7 @@ suspend fun composition(
     commandDispatcher: RenderCommandDispatcher,
     composable: @Composable() () -> Unit
 ) = coroutineScope {
-        withContext(ComposeThreadDispatcher) {
+        withContext(composeThreadDispatcher) {
             val composition = compositionFor(
                 root,
                 Recomposer.current(),

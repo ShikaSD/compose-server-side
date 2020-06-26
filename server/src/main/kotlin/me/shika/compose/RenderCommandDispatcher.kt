@@ -7,80 +7,69 @@ import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.launch
 import kotlinx.serialization.ImplicitReflectionSerializer
 import kotlinx.serialization.UnstableDefault
-import kotlinx.serialization.builtins.ListSerializer
-import kotlinx.serialization.builtins.MapSerializer
-import kotlinx.serialization.builtins.serializer
-import kotlinx.serialization.json.*
+import me.shika.NodeUpdate
+import me.shika.RenderCommand
 import java.util.concurrent.Executors
 import kotlin.coroutines.CoroutineContext
 
 @OptIn(ImplicitReflectionSerializer::class, UnstableDefault::class)
 class RenderCommandDispatcher(
     override val coroutineContext: CoroutineContext = Executors.newSingleThreadExecutor().asCoroutineDispatcher(),
-    private val channel: Channel<JsonElement> = Channel()
-): CoroutineScope, ReceiveChannel<JsonElement> by channel {
+    private val channel: Channel<RenderCommand> = Channel()
+): CoroutineScope, ReceiveChannel<RenderCommand> by channel {
+    private val pendingNodeUpdates = mutableListOf<NodeUpdate>()
+
     fun insert(parent: HtmlNode, index: Int, node: HtmlNode) {
-        launch {
-            sendJson(
-                json {
-                    "type" to "insert"
-                    "parent" to parent.id
-                    "index" to index
-                    "node" to json {
-                        when (node) {
-                            is HtmlNode.Tag -> {
-                                "type" to "tag"
-                                "id" to node.id
-                                "tag" to node.tag
-                                "attributes" to Json.toJson(
-                                    MapSerializer(String.serializer(), String.serializer()),
-                                    node.attributes.filterValues { it != null } as Map<String, String>
-                                )
-                                "events" to Json.toJson(
-                                    ListSerializer(String.serializer()),
-                                    node.events.keys.map { it.type }
-                                )
-                            }
-                            is HtmlNode.Text -> {
-                                "type" to "text"
-                                "value" to node.value
-                            }
-                        }
-                    }
-                }
+        pendingNodeUpdates +=
+            NodeUpdate(
+                nodeId = parent.id,
+                command = NodeUpdate.Command.Insert(
+                    index = index,
+                    node = node.toDescription()
+                )
             )
-        }
     }
 
     fun remove(parent: HtmlNode, index: Int, count: Int) {
-        launch {
-            sendJson(
-                json {
-                    "type" to "remove"
-                    "parent" to parent.id
-                    "index" to index
-                    "count" to count
-                }
+        pendingNodeUpdates +=
+            NodeUpdate(
+                nodeId = parent.id,
+                command = NodeUpdate.Command.Remove(
+                    index = index,
+                    count = count
+                )
             )
-        }
     }
 
     fun move(parent: HtmlNode, from: Int, to: Int, count: Int) {
-        launch {
-            sendJson(
-                json {
-                    "type" to "move"
-                    "parent" to parent.id
-                    "from" to from
-                    "to" to to
-                    "count" to count
-                }
+        pendingNodeUpdates +=
+            NodeUpdate(
+                nodeId = parent.id,
+                command = NodeUpdate.Command.Move(
+                    from = from,
+                    to = to,
+                    count = count
+                )
             )
-        }
+
     }
 
-    private suspend fun sendJson(jsonObject: JsonObject) {
-        channel.send(jsonObject)
+    private suspend fun send(command: RenderCommand) {
+        channel.send(command)
+    }
+
+    fun commit() {
+        val updates = pendingNodeUpdates.toList()
+        pendingNodeUpdates.clear()
+
+        launch {
+            send(
+                RenderCommand(
+                    nodeUpdates = updates,
+                    valueUpdates = emptyList()
+                )
+            )
+        }
     }
 
     fun dispose() {

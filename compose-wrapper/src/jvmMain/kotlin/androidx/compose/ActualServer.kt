@@ -33,7 +33,7 @@ private val threadFactory = object : ThreadFactory {
             .also { currentThread = it }
 }
 val composeThreadExecutor: ScheduledExecutorService = Executors.newSingleThreadScheduledExecutor(threadFactory)
-private val composeThreadDispatcher = composeThreadExecutor.asCoroutineDispatcher()
+val composeThreadDispatcher = composeThreadExecutor.asCoroutineDispatcher()
 
 internal actual fun isMainThread(): Boolean =
     Thread.currentThread() == threadFactory.currentThread

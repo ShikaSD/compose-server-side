@@ -7,9 +7,9 @@ import androidx.compose.*
 typealias ServerUpdater<T> = ComposerUpdater<HtmlNode, T>
 
 class ServerComposer(
-    val root: HtmlNode,
+    root: HtmlNode,
     slotTable: SlotTable,
-    commandDispatcher: RenderCommandDispatcher,
+    val commandDispatcher: RenderCommandDispatcher,
     applier: Applier<HtmlNode> = Applier(
         root = root,
         adapter = ServerApplyAdapter(commandDispatcher)
@@ -23,14 +23,14 @@ class ServerComposer(
 
     inline fun <T : HtmlNode> emit(
         key: Any,
-        /*crossinline*/ ctor: () -> T,
+        /*crossinline*/ ctor: (RenderCommandDispatcher) -> T,
         update: ServerUpdater<T>.() -> Unit
     ) {
         println("emit1 $key")
         startNode(key)
 
         val node = if (inserting) {
-            ctor().also { emitNode(it) }
+            ctor(commandDispatcher).also { emitNode(it) }
         } else {
             useNode() as T
         }
@@ -41,7 +41,7 @@ class ServerComposer(
 
     inline fun <T : HtmlNode> emit(
         key: Any,
-        /*crossinline*/ ctor: () -> T,
+        /*crossinline*/ ctor: (RenderCommandDispatcher) -> T,
         update: ServerUpdater<T>.() -> Unit,
         children: () -> Unit
     ) {
@@ -49,7 +49,7 @@ class ServerComposer(
         startNode(key)
 
         val node = if (inserting) {
-            ctor().also {
+            ctor(commandDispatcher).also {
                 emitNode(it)
             }
         } else {
@@ -62,7 +62,10 @@ class ServerComposer(
     }
 
     private class ServerApplyAdapter(private val commandDispatcher: RenderCommandDispatcher) : ApplyAdapter<HtmlNode> {
+        private var depth = 0
+
         override fun HtmlNode.start(instance: HtmlNode) {
+            depth++
         }
 
         override fun HtmlNode.insertAt(index: Int, instance: HtmlNode) {
@@ -84,6 +87,10 @@ class ServerComposer(
         }
 
         override fun HtmlNode.end(instance: HtmlNode, parent: HtmlNode) {
+            depth--
+            if (depth == 0) {
+                commandDispatcher.commit()
+            }
         }
 
         private fun HtmlNode.tag() =

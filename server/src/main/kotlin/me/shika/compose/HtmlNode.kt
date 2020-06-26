@@ -1,9 +1,9 @@
 package me.shika.compose
 
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.launch
+import me.shika.NodeDescription
 import java.util.concurrent.atomic.AtomicLong
 
 sealed class HtmlNode {
@@ -61,6 +61,19 @@ sealed class HtmlNode {
     }
 
     data class Text(val value: String): HtmlNode()
+
+    fun toDescription(): NodeDescription =
+        when (this) {
+            is Tag -> NodeDescription.Tag(
+                id,
+                tag,
+                attributes,
+                events.keys.map { it.type }
+            )
+            is Text -> NodeDescription.Text(
+                value
+            )
+        }
 
     companion object {
         private val nextId = AtomicLong(0L)

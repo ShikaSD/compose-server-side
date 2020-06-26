@@ -1,3 +1,9 @@
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonConfiguration
+import me.shika.ClientEvent
+import me.shika.NodeDescription
+import me.shika.NodeUpdate.Command.*
+import me.shika.RenderCommand
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.Node
 import org.w3c.dom.WebSocket
@@ -15,68 +21,49 @@ fun main() {
     }
     socket.onmessage = {
         console.log(it.data)
-        val data: dynamic = JSON.parse(it.data as String)
-
-        when (data.type) {
-            "insert" -> nodeUpdater.insert(
-                parentId = data.parent,
-                index = data.index,
-                node = when (data.node.type) {
-                    "tag" -> SerializedNode.Tag(
-                        id = data.node.id,
-                        tag = data.node.tag,
-                        attributes = data.node.attributes,
-                        events = (data.node.events as Array<String>).toList()
-                    )
-                    "text" -> SerializedNode.Text(
-                        value = data.node.value
-                    )
-                    else -> throw IllegalArgumentException("Unknown node type")
+        val json = Json(JsonConfiguration.Stable)
+        val data = json.parse(RenderCommand.serializer(), it.data as String)
+        for (update in data.nodeUpdates) {
+            when (val command = update.command) {
+                is Insert -> {
+                    nodeUpdater.insert(parentId = update.nodeId, index = command.index, node = command.node)
                 }
-            )
-            "remove" -> nodeUpdater.remove(
-                parentId = data.parent,
-                index = data.index,
-                count = data.count
-            )
-            "move" -> nodeUpdater.move(
-                parentId = data.parent,
-                from = data.from,
-                to = data.to,
-                count = data.count
-            )
+                is Remove -> {
+                    nodeUpdater.remove(parentId = update.nodeId, index = command.index, count = command.count)
+                }
+                is Move -> {
+                    nodeUpdater.move(
+                        parentId = update.nodeId,
+                        from = command.from,
+                        to = command.to,
+                        count = command.count
+                    )
+                }
+            }
         }
     }
-}
-
-sealed class SerializedNode {
-    data class Tag(val id: Long, val tag: String, val attributes: dynamic, val events: List<String>) : SerializedNode()
-    data class Text(val value: String) : SerializedNode()
 }
 
 class NodeUpdater(val socket: WebSocket) {
     private val nodes = HashMap<Long, HTMLElement>()
     private var bodyId: Long? = null
 
-    fun insert(parentId: Long, index: Int, node: SerializedNode) {
+    fun insert(parentId: Long, index: Int, node: NodeDescription) {
         if (bodyId == null) {
             bodyId = parentId
             nodes[parentId] = document.body!!
         }
         val parent = nodes[parentId]!!
         val element = when (node) {
-            is SerializedNode.Text -> document.createTextNode(node.value)
-            is SerializedNode.Tag -> document.createElement(node.tag) {
-                if (node.attributes.className) {
-                    className = node.attributes.className
+            is NodeDescription.Text -> document.createTextNode(node.value)
+            is NodeDescription.Tag -> document.createElement(node.tag) {
+                if (node.attributes["className"] != null) {
+                    className = node.attributes["className"]!!
                 }
                 node.events.forEach { event ->
                     addEventListener(event, callback = {
-                        val data = ServerMessage(
-                            type = "event",
-                            payload = EventMessagePayload(node.id, event)
-                        )
-                        socket.send(JSON.stringify(data))
+                        val data = ClientEvent(node.id, "click", emptyMap())
+                        socket.send(Json.stringify(ClientEvent.serializer(), data))
                     })
                 }
                 nodes[node.id] = this as HTMLElement
@@ -117,13 +104,3 @@ class NodeUpdater(val socket: WebSocket) {
         }
     }
 }
-
-data class ServerMessage(
-    val type: String,
-    val payload: EventMessagePayload
-)
-
-data class EventMessagePayload(
-    val id: Long,
-    val type: String
-)
