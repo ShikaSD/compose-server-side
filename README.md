@@ -1,6 +1,8 @@
 # ComposeWebUI
 ## ...or kinda server side rendering using compose
 
+Works on dev-14 with minor changes (commit hash: d7bc850db8)
+
 ![demo](images/demo.gif)
 
 This is a prototype of porting compose to ktor server rather than running it on Android.
