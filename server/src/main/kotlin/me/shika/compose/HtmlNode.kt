@@ -23,10 +23,16 @@ sealed class HtmlNode {
     }
 
     data class Tag(
+        private val commandDispatcher: RenderCommandDispatcher,
         val tag: String,
-        val attributes: Map<String, String?> = emptyMap(),
         override val events: Map<Event, () -> Unit> = emptyMap()
     ) : HtmlNode() {
+        var attributes: Map<String, String?> = emptyMap()
+            set(value) {
+                field = value
+                commandDispatcher.update(this, value)
+            }
+
         private val children: MutableList<HtmlNode> = mutableListOf()
 
         fun insertAt(index: Int, instance: HtmlNode) {

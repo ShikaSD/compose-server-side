@@ -1,20 +1,17 @@
 plugins {
-    id 'org.jetbrains.kotlin.js'
+    id 'org.jetbrains.kotlin.multiplatform'
     id 'org.jetbrains.kotlin.plugin.serialization' version '1.3.72'
 }
 
-group 'me.shika'
-version '1.0-SNAPSHOT'
-
-repositories {
-    mavenCentral()
+kotlin {
+    js().browser()
+    sourceSets {
+        jsMain {
+            dependencies {
+                implementation "org.jetbrains.kotlin:kotlin-stdlib-js"
+                implementation project(':protocol')
+                implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime-js:0.20.0"
+            }
+        }
+    }
 }
-
-dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-js"
-    implementation project(':protocol')
-    implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime-js:0.20.0"
-    testImplementation "org.jetbrains.kotlin:kotlin-test-js"
-}
-
-kotlin.target.browser { }

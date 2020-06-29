@@ -64,7 +64,7 @@ sealed class NodeDescription {
 @Serializable
 data class ValueUpdate(
     val nodeId: Long,
-    val updates: Map<String, String>
+    val updates: Map<String, String?>
 )
 
 

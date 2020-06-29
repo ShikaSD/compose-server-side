@@ -1,19 +1,19 @@
 package me.shika
 
-import androidx.compose.state
-import io.ktor.application.Application
-import io.ktor.application.install
-import io.ktor.http.ContentType
+import androidx.compose.Composable
+import io.ktor.application.*
 import io.ktor.http.cio.websocket.Frame
 import io.ktor.http.cio.websocket.pingPeriod
 import io.ktor.http.cio.websocket.readText
 import io.ktor.http.cio.websocket.timeout
-import io.ktor.http.content.resource
-import io.ktor.http.content.static
-import io.ktor.routing.accept
-import io.ktor.routing.routing
+import io.ktor.routing.Route
+import io.ktor.util.AttributeKey
 import io.ktor.websocket.WebSockets
+import io.ktor.websocket.application
 import io.ktor.websocket.webSocket
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.launch
 import kotlinx.serialization.ImplicitReflectionSerializer
@@ -22,66 +22,82 @@ import kotlinx.serialization.json.JsonConfiguration
 import kotlinx.serialization.stringify
 import me.shika.compose.*
 import java.time.Duration
+import java.util.concurrent.Executors
+import kotlin.coroutines.CoroutineContext
 
-@OptIn(ImplicitReflectionSerializer::class)
 fun Application.module() {
     install(WebSockets) {
         pingPeriod = Duration.ofSeconds(60) // Disabled (null) by default
         timeout = Duration.ofSeconds(15)
     }
+}
 
-    routing {
-        static {
-            resource("client.js")
-            resource("client.js.map")
-        }
+class Compose: CoroutineScope {
+    private val job = SupervisorJob()
+    private val eventDispatcherThread = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
 
-        accept(ContentType.Text.Html) {
-            resource(remotePath = "/", resource = "index.html")
-        }
+    override val coroutineContext: CoroutineContext = job + eventDispatcherThread
 
-        webSocket("/websocket") {
-            val json = Json(JsonConfiguration.Stable)
+    fun shutdown() {
+        job.cancel()
+    }
 
-            val commandDispatcher = RenderCommandDispatcher()
-            val eventDispatcher = EventDispatcher()
-            val eventProcessor = EventProcessor(eventDispatcher)
+    companion object : ApplicationFeature<Application, Nothing, Compose> {
+        override val key: AttributeKey<Compose> = AttributeKey("compose-render")
 
-            launch {
-                commandDispatcher.consumeEach {
-                    outgoing.send(Frame.Text(json.stringify(it)))
+        override fun install(pipeline: Application, configure: Nothing.() -> Unit): Compose {
+            val feature = Compose()
+
+            pipeline.environment.monitor.subscribe(ApplicationStopPreparing) {
+                feature.shutdown()
+            }
+
+            with(pipeline) {
+                install(WebSockets) {
+                    pingPeriod = Duration.ofSeconds(60)
+                    timeout = Duration.ofSeconds(15)
                 }
             }
 
-            val root = HtmlNode.Tag("body")
-            root.eventDispatcher = eventDispatcher
 
-            val composition = composition(root, commandDispatcher) {
-                div {
-                    h1(className = "Test") {
-                        text("Hello")
-                    }
-                    val state = state { 1 }
-                    h2 {
-                        text("Counter ${state.value}")
-                    }
-                    button(text = "Increment!") {
-                        state.value = state.value + 1
-                    }
-                }
-            }
-
-            incoming.consumeEach {
-                when (it) {
-                    is Frame.Text -> {
-                        val event = json.parse(ClientEvent.serializer(), it.readText())
-                        eventProcessor.process(event)
-                    }
-                }
-            }
-
-            composition.dispose()
+            return feature
         }
     }
 }
 
+@OptIn(ImplicitReflectionSerializer::class)
+fun Route.compose(webSocketPath: String, body: @Composable() () -> Unit) {
+    webSocket(webSocketPath) {
+        val feature = application.feature(Compose)
+
+        val json = Json(JsonConfiguration.Stable)
+
+        val commandDispatcher = RenderCommandDispatcher(coroutineContext = feature.coroutineContext)
+        val eventDispatcher = EventDispatcher()
+        val eventProcessor = EventProcessor(eventDispatcher)
+
+        feature.launch {
+            commandDispatcher.consumeEach {
+                outgoing.send(Frame.Text(json.stringify(it)))
+            }
+        }
+
+        val root = HtmlNode.Tag(commandDispatcher, "<root>")
+        root.eventDispatcher = eventDispatcher
+
+        val composition = composition(root, commandDispatcher) {
+            body()
+        }
+
+        incoming.consumeEach {
+            when (it) {
+                is Frame.Text -> {
+                    val event = json.parse(ClientEvent.serializer(), it.readText())
+                    eventProcessor.process(event)
+                }
+            }
+        }
+
+        composition.dispose()
+    }
+}

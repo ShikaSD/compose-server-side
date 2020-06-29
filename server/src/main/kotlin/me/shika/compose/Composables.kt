@@ -64,7 +64,7 @@ fun tag(
     } else {
         emptyMap()
     }
-    HtmlNode.Tag(tag = tagName, attributes = mapOf("className" to className), events = events) {
+    HtmlNode.Tag(tag = tagName, events = events, attributes = mapOf("className" to className)) {
         children()
     }
 }

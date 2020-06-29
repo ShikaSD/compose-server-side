@@ -20,29 +20,10 @@ dependencies {
     implementation project(':protocol')
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.7"
     implementation "io.ktor:ktor-server-core:1.3.2"
-    implementation "io.ktor:ktor-server-netty:1.3.2"
     implementation "io.ktor:ktor-websockets:1.3.2"
-    implementation "ch.qos.logback:logback-classic:1.2.3"
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.20.0"
 
     kotlinCompilerPluginClasspath "androidx.compose:compose-compiler:0.1.0-dev14"
-}
-
-task copyClientFiles(type: Copy) {
-    dependsOn ':client:build'
-    from new File(project(':client').buildDir, 'distributions')
-    into new File(buildDir, 'resources')
-}
-
-compileKotlin {
-    dependsOn copyClientFiles
-    kotlinOptions {
-        sourceSets.main.resources.srcDirs += copyClientFiles.getDestinationDir()
-    }
-}
-
-application {
-    mainClassName = "me.shika.ServerKt"
 }
 
 tasks.withType(KotlinCompile) {
