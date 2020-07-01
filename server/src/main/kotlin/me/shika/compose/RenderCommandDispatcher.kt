@@ -70,7 +70,6 @@ class RenderCommandDispatcher(
     }
 
     fun commit() {
-        println("commit")
         val nodeUpdates = pendingNodeUpdates.toList()
         val valueUpdates = pendingValueUpdates.toList()
         pendingNodeUpdates.clear()

@@ -8,12 +8,13 @@ import org.w3c.dom.WebSocket
 
 class ComposeContent(
     rootElement: HTMLElement,
-    socketPath: String
+    socketPath: String,
+    eventRegistry: EventRegistry = EventRegistry()
 ) {
     private val socket = WebSocket(socketPath)
     private val json = Json(JsonConfiguration.Stable)
 
-    private val eventDispatcher = EventDispatcher(::dispatchEvent)
+    private val eventDispatcher = EventDispatcher(eventRegistry, ::dispatchEvent)
     private val updateHandler = UpdateHandler(rootElement, eventDispatcher)
 
     init {
@@ -29,7 +30,9 @@ class ComposeContent(
     }
 
     private fun dispatchEvent(clientEvent: ClientEvent) {
-        socket.send(json.stringify(ClientEvent.serializer(), clientEvent))
+        val value = json.stringify(ClientEvent.serializer(), clientEvent)
+        console.log(value)
+        socket.send(value)
     }
 }
 

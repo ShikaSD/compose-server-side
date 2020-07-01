@@ -8,16 +8,16 @@ import java.util.concurrent.atomic.AtomicLong
 
 sealed class HtmlNode {
     val id: Long = nextId.getAndIncrement()
-    open val events: Map<Event, () -> Unit> = emptyMap()
+    open val events: Map<Event, (Event.Payload<*>) -> Unit> = emptyMap()
 
     lateinit var eventDispatcher: EventDispatcher
     var parent: HtmlNode? = null
 
-    fun observe(eventDispatcher: EventDispatcher, channel: Channel<EventPayload>) {
+    fun observe(eventDispatcher: EventDispatcher, channel: Channel<EventPayload<*>>) {
         this.eventDispatcher = eventDispatcher
         eventDispatcher.launch {
             channel.consumeEach {
-                events[it.payload]?.invoke()
+                events[it.payload.descriptor]?.invoke(it.payload)
             }
         }
     }
@@ -25,7 +25,7 @@ sealed class HtmlNode {
     data class Tag(
         private val commandDispatcher: RenderCommandDispatcher,
         val tag: String,
-        override val events: Map<Event, () -> Unit> = emptyMap()
+        override val events: Map<Event, (Event.Payload<*>) -> Unit> = emptyMap()
     ) : HtmlNode() {
         var attributes: Map<String, String?> = emptyMap()
             set(value) {

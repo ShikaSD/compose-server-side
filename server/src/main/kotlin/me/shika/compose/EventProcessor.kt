@@ -11,9 +11,9 @@ import kotlin.coroutines.CoroutineContext
 class EventDispatcher : CoroutineScope {
     override val coroutineContext: CoroutineContext = composeThreadDispatcher
 
-    private val nodeEventChannels = WeakHashMap<Long, Channel<EventPayload>>()
+    private val nodeEventChannels = WeakHashMap<Long, Channel<EventPayload<*>>>()
 
-    fun dispatchEvent(event: EventPayload) {
+    fun dispatchEvent(event: EventPayload<*>) {
         launch {
             nodeEventChannels[event.targetId]?.send(event)
         }
@@ -23,7 +23,7 @@ class EventDispatcher : CoroutineScope {
         if (nodeEventChannels.contains(node.id)) {
             throw IllegalStateException("Already registered")
         }
-        val channel = Channel<EventPayload>()
+        val channel = Channel<EventPayload<*>>()
         nodeEventChannels[node.id] = channel
         node.observe(this, channel)
     }
@@ -34,17 +34,17 @@ class EventDispatcher : CoroutineScope {
     }
 }
 
-class EventProcessor(val dispatcher: EventDispatcher) {
+class EventProcessor(private val dispatcher: EventDispatcher) {
     fun process(event: ClientEvent) {
-        if (event.name == "click") {
-            val event = EventPayload(targetId = event.targetId, payload = Event.Click)
+        if (event.name == Click.type) {
+            val event = EventPayload(targetId = event.targetId, payload = Click.Payload)
+            dispatcher.dispatchEvent(event)
+        } else if (event.name == InputChange.type) {
+            val event = EventPayload(
+                targetId = event.targetId,
+                payload = InputChange.Payload(event.values["value"]!!)
+            )
             dispatcher.dispatchEvent(event)
         }
     }
-}
-
-data class EventPayload(val targetId: Long, val payload: Event)
-
-sealed class Event(val type: String) {
-    object Click : Event("click")
 }

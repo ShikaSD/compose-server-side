@@ -47,9 +47,19 @@ fun h2(className: String? = null, children: @Composable() () -> Unit = {}) {
 
 @Composable
 fun button(className: String? = null, text: String, onClick: () -> Unit) {
-    tag(tagName = "button", className = className, onClick = onClick) {
+    tag(tagName = "button", className = className, onClick = { onClick() }) {
         text(text)
     }
+}
+
+@Composable
+fun input(type: String, onChange: (String) -> Unit) {
+    tag(
+        tagName = "input",
+        attributes = mapOf("type" to type),
+        events = mapOf(InputChange to { it: Event.Payload<*> -> onChange((it as InputChange.Payload).value) }),
+        children = { }
+    )
 }
 
 @Composable
@@ -59,12 +69,37 @@ fun tag(
     onClick: (() -> Unit)? = null,
     children: @Composable() () -> Unit
 ) {
-    val events = if (onClick != null) {
-        mapOf<Event, () -> Unit>(Event.Click to onClick)
-    } else {
-        emptyMap()
-    }
-    HtmlNode.Tag(tag = tagName, events = events, attributes = mapOf("className" to className)) {
+
+    val attributes =
+        if (className != null) {
+            mapOf("className" to className)
+        } else {
+            emptyMap()
+        }
+
+    val events: Map<Event, (Event.Payload<*>) -> Unit> =
+        if (onClick != null) {
+            mapOf(Click to { it: Event.Payload<*> -> onClick() })
+        } else {
+            emptyMap()
+        }
+
+    tag(
+        tagName,
+        attributes,
+        events,
+        children
+    )
+}
+
+@Composable
+fun tag(
+    tagName: String,
+    attributes: Map<String, String>,
+    events: Map<Event, (Event.Payload<*>) -> Unit>,
+    children: @Composable() () -> Unit
+) {
+    HtmlNode.Tag(tag = tagName, events = events, attributes = attributes) {
         children()
     }
 }

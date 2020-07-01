@@ -79,13 +79,20 @@ actual interface ChoreographerFrameCallback {
     actual fun doFrame(frameTimeNanos: Long)
 }
 
+val traceLoggers = mutableListOf<TraceLogger>()
+
+interface TraceLogger {
+    fun start(name: String)
+    fun end()
+}
+
 internal actual object Trace {
     actual fun beginSection(name: String) {
-        println("Trace: $name")
+        traceLoggers.forEach { it.start(name) }
     }
 
     actual fun endSection() {
-        println("Trace end")
+        traceLoggers.forEach { it.end() }
     }
 }
 

@@ -28,13 +28,7 @@ class NodeUpdater(private val rootElement: HTMLElement, private val eventDispatc
                     }
                 }
                 node.events.forEach { event ->
-                    addEventListener(event, callback = {
-                        eventDispatcher.dispatchEvent(
-                            nodeId = node.id,
-                            name = event,
-                            values = emptyMap()
-                        )
-                    })
+                    eventDispatcher.registerEvent(node.id, this, event)
                 }
                 nodes[node.id] = this
             }
