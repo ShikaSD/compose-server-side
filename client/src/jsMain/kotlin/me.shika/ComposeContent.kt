@@ -23,7 +23,7 @@ class ComposeContent(
 
     private fun handleMessage(event: MessageEvent) {
         val data = event.data as String
-        println(data)
+        println("received <= $data")
 
         val command = json.parse(RenderCommand.serializer(), data)
         updateHandler.handleCommand(command)
@@ -31,7 +31,7 @@ class ComposeContent(
 
     private fun dispatchEvent(clientEvent: ClientEvent) {
         val value = json.stringify(ClientEvent.serializer(), clientEvent)
-        console.log(value)
+        println("sent => $value")
         socket.send(value)
     }
 }
