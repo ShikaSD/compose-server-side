@@ -53,11 +53,14 @@ fun button(className: String? = null, text: String, onClick: () -> Unit) {
 }
 
 @Composable
-fun input(type: String, onChange: (String) -> Unit) {
+fun input(type: String, onChange: (String) -> Unit, onInput: (String) -> Unit) {
     tag(
         tagName = "input",
         attributes = mapOf("type" to type),
-        events = mapOf(InputChange to { it: Event.Payload<*> -> onChange((it as InputChange.Payload).value) }),
+        events = mapOf(
+            InputChange to InputChange.Callback { onChange(it.value) },
+            Input to Input.Callback { onInput(it.value) }
+        ) as EventMap,
         children = { }
     )
 }
@@ -77,9 +80,9 @@ fun tag(
             emptyMap()
         }
 
-    val events: Map<Event, (Event.Payload<*>) -> Unit> =
+    val events: EventMap =
         if (onClick != null) {
-            mapOf(Click to { it: Event.Payload<*> -> onClick() })
+            mapOf(Click to Click.Callback { onClick() }) as EventMap
         } else {
             emptyMap()
         }
@@ -96,7 +99,7 @@ fun tag(
 fun tag(
     tagName: String,
     attributes: Map<String, String>,
-    events: Map<Event, (Event.Payload<*>) -> Unit>,
+    events: EventMap,
     children: @Composable() () -> Unit
 ) {
     HtmlNode.Tag(tag = tagName, events = events, attributes = attributes) {

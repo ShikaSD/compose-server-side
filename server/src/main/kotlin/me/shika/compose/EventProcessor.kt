@@ -36,15 +36,23 @@ class EventDispatcher : CoroutineScope {
 
 class EventProcessor(private val dispatcher: EventDispatcher) {
     fun process(event: ClientEvent) {
-        if (event.name == Click.type) {
-            val event = EventPayload(targetId = event.targetId, payload = Click.Payload)
-            dispatcher.dispatchEvent(event)
-        } else if (event.name == InputChange.type) {
-            val event = EventPayload(
-                targetId = event.targetId,
-                payload = InputChange.Payload(event.values["value"]!!)
-            )
-            dispatcher.dispatchEvent(event)
+        val payload = when (event.name) {
+            Click.type -> EventPayload(targetId = event.targetId, payload = Click.Payload)
+            InputChange.type ->
+                EventPayload(
+                    targetId = event.targetId,
+                    payload = InputChange.Payload(event.values["value"]!!)
+                )
+            Input.type ->
+                EventPayload(
+                    targetId = event.targetId,
+                    payload = Input.Payload(event.values["value"]!!)
+                )
+            else -> null
+        }
+
+        if (payload != null) {
+            dispatcher.dispatchEvent(payload)
         }
     }
 }

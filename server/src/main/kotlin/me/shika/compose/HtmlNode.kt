@@ -6,9 +6,11 @@ import kotlinx.coroutines.launch
 import me.shika.NodeDescription
 import java.util.concurrent.atomic.AtomicLong
 
+typealias EventMap = Map<Event, Event.Callback<*, Event.Payload<*>>>
+
 sealed class HtmlNode {
     val id: Long = nextId.getAndIncrement()
-    open val events: Map<Event, (Event.Payload<*>) -> Unit> = emptyMap()
+    open val events: EventMap = emptyMap()
 
     lateinit var eventDispatcher: EventDispatcher
     var parent: HtmlNode? = null
@@ -17,7 +19,7 @@ sealed class HtmlNode {
         this.eventDispatcher = eventDispatcher
         eventDispatcher.launch {
             channel.consumeEach {
-                events[it.payload.descriptor]?.invoke(it.payload)
+                events[it.payload.descriptor]?.onReceive?.invoke(it.payload)
             }
         }
     }
@@ -25,7 +27,7 @@ sealed class HtmlNode {
     data class Tag(
         private val commandDispatcher: RenderCommandDispatcher,
         val tag: String,
-        override val events: Map<Event, (Event.Payload<*>) -> Unit> = emptyMap()
+        override val events: EventMap = emptyMap()
     ) : HtmlNode() {
         var attributes: Map<String, String?> = emptyMap()
             set(value) {

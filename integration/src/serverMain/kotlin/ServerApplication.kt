@@ -18,7 +18,7 @@ fun ComposeApp() {
             text("Counter $counter")
         }
 
-        input(type = "text") {
+        input(type = "text", onChange = { }) {
             title = it
         }
         button(text = "Increment!") {

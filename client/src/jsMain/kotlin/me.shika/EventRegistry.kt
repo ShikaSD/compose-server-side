@@ -39,6 +39,10 @@ interface EventHandler {
                 node.addEventListener(name, {
                     sendEvent(mapOf("value" to node.value))
                 })
+            } else if (name == "input" && node is HTMLInputElement) {
+                node.addEventListener(name, {
+                    sendEvent(mapOf("value" to node.value))
+                })
             }
         }
     }
