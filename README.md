@@ -3,7 +3,7 @@
 
 Works on dev-14 with minor changes (commit hash: d7bc850db8)
 
-![demo](images/demo1.gif)
+![demo](images/demo2.gif)
 
 This is a prototype of porting compose to ktor server rather than running it on Android.
 

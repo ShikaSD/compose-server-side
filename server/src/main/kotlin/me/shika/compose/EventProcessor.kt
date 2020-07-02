@@ -38,10 +38,10 @@ class EventProcessor(private val dispatcher: EventDispatcher) {
     fun process(event: ClientEvent) {
         val payload = when (event.name) {
             Click.type -> EventPayload(targetId = event.targetId, payload = Click.Payload)
-            InputChange.type ->
+            Change.type ->
                 EventPayload(
                     targetId = event.targetId,
-                    payload = InputChange.Payload(event.values["value"]!!)
+                    payload = Change.Payload(event.values["value"]!!)
                 )
             Input.type ->
                 EventPayload(

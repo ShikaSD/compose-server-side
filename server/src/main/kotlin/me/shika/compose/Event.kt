@@ -27,15 +27,15 @@ object Click : Event {
     }
 }
 
-object InputChange : Event {
+object Change : Event {
     override val type: String = "change"
 
-    data class Payload(val value: String) : Event.Payload<InputChange> {
-        override val descriptor: InputChange = InputChange
+    data class Payload(val value: String) : Event.Payload<Change> {
+        override val descriptor: Change = Change
     }
 
-    class Callback(override val onReceive: (payload: Payload) -> Unit) : Event.Callback<InputChange, Payload> {
-        override val descriptor: InputChange = InputChange
+    class Callback(override val onReceive: (payload: Payload) -> Unit) : Event.Callback<Change, Payload> {
+        override val descriptor: Change = Change
     }
 }
 

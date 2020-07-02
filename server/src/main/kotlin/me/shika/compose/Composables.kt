@@ -44,6 +44,10 @@ fun h2(className: String? = null, children: @Composable() () -> Unit = {}) {
     tag(tagName = "h2", className = className, children = children)
 }
 
+@Composable
+fun p(children: @Composable() () -> Unit) {
+    tag(tagName = "p", attributes = emptyMap(), events = emptyMap(), children = children)
+}
 
 @Composable
 fun button(className: String? = null, text: String, onClick: () -> Unit) {
@@ -53,14 +57,19 @@ fun button(className: String? = null, text: String, onClick: () -> Unit) {
 }
 
 @Composable
-fun input(type: String, onChange: (String) -> Unit, onInput: (String) -> Unit) {
+fun input(
+    type: String,
+    onChange: ((String) -> Unit)? = null,
+    onInput: ((String) -> Unit)? = null
+) {
     tag(
         tagName = "input",
         attributes = mapOf("type" to type),
-        events = mapOf(
-            InputChange to InputChange.Callback { onChange(it.value) },
-            Input to Input.Callback { onInput(it.value) }
-        ) as EventMap,
+        events =
+            listOfNotNull(
+                onChange?.let { Change.Callback { it(it.value) } },
+                onInput?.let { Input.Callback { it(it.value) } }
+            ).associateBy { it.descriptor } as EventMap,
         children = { }
     )
 }
