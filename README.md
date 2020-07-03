@@ -3,6 +3,8 @@
 
 Works on dev-14 with minor changes (commit hash: d7bc850db8)
 
+Now [live on Heroku](https://compose-test-app.herokuapp.com/)!
+
 ![demo](images/demo2.gif)
 
 This is a prototype of porting compose to ktor server rather than running it on Android.
@@ -24,4 +26,7 @@ Add its path to `local.properties` file:
 aosp.location=/location/to/repo/aosp
 ```
 
-Now, you can build the server using `./gradlew :server:build` command or run it using `./gradlew :server:run`.
+Now, you can build the `integration` module, which contains full stack implementation of actual app. Ideally, this is the 
+one you could write if this library will be ever published.
+
+The library with all definitions is in `server` module and the similarly, JS library is in `client` one.
