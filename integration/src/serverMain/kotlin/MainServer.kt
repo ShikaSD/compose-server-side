@@ -10,10 +10,12 @@ import io.ktor.server.netty.Netty
 import me.shika.Compose
 import me.shika.compose
 
+private const val PORT_PROPERTY = "server.port"
+
 fun main() {
     embeddedServer(
         Netty,
-        port = 8080,
+        port = System.getProperty(PORT_PROPERTY)?.toIntOrNull() ?: 8080,
         module = Application::module
     ).start(wait = true)
 }
