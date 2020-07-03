@@ -66,6 +66,7 @@ kotlin {
 task copyServerLibs(type: Copy) {
     into "$buildDir/server"
     from(configurations.serverRuntimeClasspath)
+    from(project(':compose-wrapper').configurations.jvmRuntimeClasspath)
 }
 
 task stage(dependsOn: ['assemble', 'clean', 'copyServerLibs'])
