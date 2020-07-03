@@ -7,6 +7,6 @@ lateinit var content: ComposeContent
 
 fun main() {
     val root = document.querySelector(".content") as HTMLElement
-    val protocol = if (window.location.protocol == "https") "wss" else "ws"
+    val protocol = if (window.location.protocol == "https:") "wss" else "ws"
     content = ComposeContent(root, "$protocol://${window.location.host}/websocket")
 }
