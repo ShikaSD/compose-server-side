@@ -2,6 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id 'org.jetbrains.kotlin.multiplatform'
+    id 'application'
 }
 
 configurations.kotlinCompilerClasspath { configuration ->
@@ -59,4 +60,18 @@ kotlin {
             }
         }
     }
+}
+
+// heroku setup
+task copyServerLibs(type: Copy) {
+    into "$buildDir/server"
+    from(configurations.serverRuntimeClasspath)
+}
+
+task stage(dependsOn: ['assemble', 'clean', 'copyServerLibs'])
+assemble.mustRunAfter clean
+copyServerLibs.mustRunAfter assemble
+
+application {
+    mainClassName = 'MainServerKt'
 }
