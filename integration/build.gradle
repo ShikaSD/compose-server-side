@@ -5,15 +5,6 @@ plugins {
     id 'application'
 }
 
-configurations.kotlinCompilerClasspath { configuration ->
-    def dep = "org.jetbrains.kotlin:kotlin-compiler-embeddable:1.3.70-dev-withExperimentalGoogleExtensions-20200424"
-    withDependencies {
-        it -> it.add(project.dependencies.create(dep))
-    }
-    .resolutionStrategy
-    .force(dep)
-}
-
 tasks.withType(KotlinCompile) {
     kotlinOptions {
         useIR = true
@@ -25,14 +16,14 @@ kotlin {
     jvm('server') {
         compilations.main {
             tasks.getByName(processResourcesTaskName) {
-                dependsOn(clientBrowserWebpack)
+//                dependsOn(clientBrowserWebpack)
                 from(new File(buildDir, "distributions"))
             }
         }
     }
 
     dependencies {
-        kotlinCompilerPluginClasspath "androidx.compose:compose-compiler:0.1.0-dev14"
+        kotlinCompilerPluginClasspath files(new File(rootProject.projectDir, "libs/compose-compiler.jar"))
     }
 
     sourceSets {
@@ -53,9 +44,9 @@ kotlin {
                 implementation project(':server')
                 implementation project(':compose-wrapper')
 
-                implementation "io.ktor:ktor-server-core:1.3.2"
-                implementation "io.ktor:ktor-server-netty:1.3.2"
-                implementation "io.ktor:ktor-websockets:1.3.2"
+                implementation "io.ktor:ktor-server-core:1.3.2-1.4-M3"
+                implementation "io.ktor:ktor-server-netty:1.3.2-1.4-M3"
+                implementation "io.ktor:ktor-websockets:1.3.2-1.4-M3"
                 implementation "ch.qos.logback:logback-classic:1.2.3"
             }
         }
