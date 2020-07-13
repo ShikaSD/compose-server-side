@@ -12,18 +12,20 @@ tasks.withType(KotlinCompile) {
 }
 
 kotlin {
-    js('client').browser()
+    js('client', IR) {
+        binaries.executable()
+        browser()
+    }
     jvm('server') {
         compilations.main {
             tasks.getByName(processResourcesTaskName) {
-                dependsOn(clientJar)
+                dependsOn(clientBrowserProductionWebpack)
                 from(new File(buildDir, "distributions"))
             }
+            kotlinOptions {
+                freeCompilerArgs += ["-Xplugin=$rootDir.absolutePath/libs/compose-compiler.jar"]
+            }
         }
-    }
-
-    dependencies {
-        kotlinCompilerPluginClasspath files(new File(rootProject.projectDir, "libs/compose-compiler.jar"))
     }
 
     sourceSets {
