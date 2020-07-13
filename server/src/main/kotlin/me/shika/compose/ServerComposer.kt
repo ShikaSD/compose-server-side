@@ -2,101 +2,46 @@
 
 package me.shika.compose
 
-import androidx.compose.*
+import androidx.compose.AbstractApplier
+import androidx.compose.ExperimentalComposeApi
 
-typealias ServerUpdater<T> = ComposerUpdater<HtmlNode, T>
-
-class ServerComposer(
-    root: HtmlNode,
-    slotTable: SlotTable,
-    val commandDispatcher: RenderCommandDispatcher,
-    applier: Applier<HtmlNode> = Applier(
-        root = root,
-        adapter = ServerApplyAdapter(commandDispatcher)
-    ),
-    recomposer: Recomposer
-) : Composer<HtmlNode>(slotTable, applier, recomposer) {
-
-    init {
-        FrameManager.ensureStarted()
-        addChangesAppliedObserver {
-            commitRenderCommands()
+class ServerApplyAdapter(
+    private val commandDispatcher: RenderCommandDispatcher,
+    root: HtmlNode
+) : AbstractApplier<HtmlNode>(root) {
+    override fun up() {
+        super.up()
+        if (current == root) {
+            commandDispatcher.commit()
         }
     }
 
-    private fun commitRenderCommands() {
-        commandDispatcher.commit()
-        addChangesAppliedObserver { commitRenderCommands() }
+    override fun insert(index: Int, instance: HtmlNode) {
+        println("insert ${current.id} $index $instance")
+        tag().insertAt(index, instance)
+        commandDispatcher.insert(current, index, instance)
     }
 
-    inline fun <T : HtmlNode> emit(
-        key: Any,
-        /*crossinline*/ ctor: (RenderCommandDispatcher) -> T,
-        update: ServerUpdater<T>.() -> Unit
-    ) {
-        startNode(key)
-
-        val node = if (inserting) {
-            ctor(commandDispatcher).also { emitNode(it) }
-        } else {
-            useNode() as T
-        }
-
-        ServerUpdater(this, node).update()
-        endNode()
+    override fun remove(index: Int, count: Int) {
+        println("remove ${current.id} $index $count")
+        tag().remove(index, count)
+        commandDispatcher.remove(current, index, count)
     }
 
-    inline fun <T : HtmlNode> emit(
-        key: Any,
-        /*crossinline*/ ctor: (RenderCommandDispatcher) -> T,
-        update: ServerUpdater<T>.() -> Unit,
-        children: () -> Unit
-    ) {
-        startNode(key)
-
-        val node = if (inserting) {
-            ctor(commandDispatcher).also {
-                emitNode(it)
-            }
-        } else {
-            useNode() as T
-        }
-
-        ServerUpdater(this, node).update()
-        children()
-        endNode()
+    override fun move(from: Int, to: Int, count: Int) {
+        println("move ${current.id} $from $to $count")
+        tag().move(from, to, count)
+        commandDispatcher.move(current, from, to, count)
     }
 
-    private class ServerApplyAdapter(private val commandDispatcher: RenderCommandDispatcher) : ApplyAdapter<HtmlNode> {
-        override fun HtmlNode.start(instance: HtmlNode) {
-        }
-
-        override fun HtmlNode.insertAt(index: Int, instance: HtmlNode) {
-            println("insert $id $index $instance")
-            tag().insertAt(index, instance)
-            commandDispatcher.insert(this, index, instance)
-        }
-
-        override fun HtmlNode.removeAt(index: Int, count: Int) {
-            println("remove $id $index $count")
-            tag().remove(index, count)
-            commandDispatcher.remove(this, index, count)
-        }
-
-        override fun HtmlNode.move(from: Int, to: Int, count: Int) {
-            println("move $id $from $to $count")
-            tag().move(from, to, count)
-            commandDispatcher.move(this, from, to, count)
-        }
-
-        override fun HtmlNode.end(instance: HtmlNode, parent: HtmlNode) {
-        }
-
-        private fun HtmlNode.tag() =
-            when (this) {
-                is HtmlNode.Tag -> this
-                is HtmlNode.Text -> throw IllegalStateException("Only tag can have children")
-            }
-
+    override fun onClear() {
+        // no-op
     }
+
+    private fun tag(): HtmlNode.Tag =
+        when (val node = current) {
+            is HtmlNode.Tag -> node
+            is HtmlNode.Text -> throw IllegalStateException("Only tag can have children")
+        }
+
 }

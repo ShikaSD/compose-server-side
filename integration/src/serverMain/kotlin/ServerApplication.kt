@@ -1,8 +1,7 @@
 import androidx.compose.*
-import androidx.compose.frames.modelListOf
 import me.shika.compose.*
 
-val messages = modelListOf<String>()
+val messages = mutableStateListOf<String>()
 private const val MESSAGE_LIMIT = 10
 
 fun addMessage(from: String, message: String) {

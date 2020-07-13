@@ -16,7 +16,7 @@ kotlin {
     jvm('server') {
         compilations.main {
             tasks.getByName(processResourcesTaskName) {
-//                dependsOn(clientBrowserWebpack)
+                dependsOn(clientJar)
                 from(new File(buildDir, "distributions"))
             }
         }

@@ -1,14 +1,12 @@
+@file:OptIn(ExperimentalComposeApi::class)
+
 package me.shika.compose
 
-import androidx.compose.Composable
-import androidx.compose.Recomposer
-import androidx.compose.composeThreadDispatcher
-import androidx.compose.compositionFor
+import androidx.compose.*
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
 
-val composer: ServerComposer
-    get() = throw IllegalStateException("Required for compiler")
+private val CommandDispatcherAmbient = staticAmbientOf<RenderCommandDispatcher>()
 
 suspend fun composition(
     root: HtmlNode,
@@ -17,14 +15,18 @@ suspend fun composition(
 ) = coroutineScope {
     withContext(composeThreadDispatcher) {
         val composition = compositionFor(
-            root,
-            Recomposer.current(),
-            composerFactory = { slotTable, recomposer ->
-                ServerComposer(root, slotTable, recomposer = recomposer, commandDispatcher = commandDispatcher)
-            }
+            root.id,
+            ServerApplyAdapter(commandDispatcher, root),
+            Recomposer.current()
         )
 
-        composition.setContent(composable)
+        composition.setContent {
+            Providers(
+                CommandDispatcherAmbient provides commandDispatcher
+            ) {
+                composable()
+            }
+        }
         composition
     }
 }
@@ -111,12 +113,26 @@ fun tag(
     events: EventMap,
     children: @Composable() () -> Unit
 ) {
-    HtmlNode.Tag(tag = tagName, events = events, attributes = attributes) {
-        children()
-    }
+    val renderCommandDispatcher = CommandDispatcherAmbient.current
+    val attributes = attributes
+    val events = events
+    emit<HtmlNode.Tag, ServerApplyAdapter>(
+        ctor = {  HtmlNode.Tag(renderCommandDispatcher, tagName, events) },
+        update = {
+            set(attributes) { attrs -> this.attributes = attrs }
+        },
+        children = children
+    )
 }
 
 @Composable
 fun text(value: String) {
-    HtmlNode.Text(value = value)
+    val renderCommandDispatcher = CommandDispatcherAmbient.current
+    val value = value
+    emit<HtmlNode.Text, ServerApplyAdapter>(
+        ctor = {  HtmlNode.Text(renderCommandDispatcher) },
+        update = {
+            set(value) { value -> this.value = value }
+        }
+    )
 }
