@@ -73,6 +73,16 @@ interface EventHandler {
                         sendEvent(mapOf("value" to it.key))
                     }
                 }
+                "mouseenter" -> {
+                    EventListener {
+                        sendEvent(emptyMap())
+                    }
+                }
+                "mouseleave" -> {
+                    EventListener {
+                        sendEvent(emptyMap())
+                    }
+                }
                 else -> null
             }
             node.addEventListener(name, listener)

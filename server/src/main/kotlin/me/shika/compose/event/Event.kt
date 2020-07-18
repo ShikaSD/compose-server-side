@@ -76,3 +76,33 @@ object KeyUp : Event {
 
 fun Modifier.onKeyUp(callback: (String) -> Unit) =
     this + KeyUp.Callback { callback(it.value) }
+
+object MouseEnter : Event {
+    override val type: String = "mouseenter"
+
+    object Payload : Event.Payload<MouseEnter> {
+        override val descriptor: MouseEnter = MouseEnter
+    }
+
+    class Callback(override val onReceive: (payload: Payload) -> Unit) : Event.Callback<MouseEnter, Payload>, Modifier {
+        override val descriptor: MouseEnter = MouseEnter
+    }
+}
+
+fun Modifier.onMouseEnter(callback: () -> Unit) =
+    this + MouseEnter.Callback { callback() }
+
+object MouseLeave : Event {
+    override val type: String = "mouseleave"
+
+    object Payload : Event.Payload<MouseLeave> {
+        override val descriptor: MouseLeave = MouseLeave
+    }
+
+    class Callback(override val onReceive: (payload: Payload) -> Unit) : Event.Callback<MouseLeave, Payload>, Modifier {
+        override val descriptor: MouseLeave = MouseLeave
+    }
+}
+
+fun Modifier.onMouseLeave(callback: () -> Unit) =
+    this + MouseLeave.Callback { callback() }

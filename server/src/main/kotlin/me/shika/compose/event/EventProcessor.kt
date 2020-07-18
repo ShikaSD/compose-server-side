@@ -47,6 +47,8 @@ interface EventProcessor {
                 Change.type -> Change.Payload(event.values["value"]!!)
                 Input.type -> Input.Payload(event.values["value"]!!)
                 KeyUp.type -> KeyUp.Payload(event.values["value"]!!)
+                MouseEnter.type -> MouseEnter.Payload
+                MouseLeave.type -> MouseLeave.Payload
                 else -> null
             }
     }

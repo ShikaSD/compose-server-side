@@ -5,6 +5,8 @@ import me.shika.compose.core.Modifier
 import me.shika.compose.core.text
 import me.shika.compose.event.onChange
 import me.shika.compose.event.onKeyUp
+import me.shika.compose.event.onMouseEnter
+import me.shika.compose.event.onMouseLeave
 import me.shika.compose.values.*
 
 val messages = modelListOf<String>()
@@ -46,6 +48,18 @@ fun ComposeApp() {
                     .onChange { darkTheme = !darkTheme }
             )
             label("Dark theme", modifier = Modifier.labelFor(id))
+        }
+
+        div {
+            var isMouseOverDiv by state { false }
+            div(Modifier
+                .style("width", "100px")
+                .style("height", "100px")
+                .background(if (isMouseOverDiv) "green" else "red")
+                .onMouseEnter { isMouseOverDiv = true }
+                .onMouseLeave { isMouseOverDiv = false }
+            ) {
+            }
         }
 
         if (name == null) {
