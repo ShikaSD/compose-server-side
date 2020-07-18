@@ -1,15 +1,11 @@
 import androidx.compose.*
 import androidx.compose.frames.modelListOf
 import me.shika.compose.*
-import me.shika.compose.attributes.id
-import me.shika.compose.attributes.labelFor
 import me.shika.compose.core.Modifier
 import me.shika.compose.core.text
 import me.shika.compose.event.onChange
 import me.shika.compose.event.onKeyUp
-import me.shika.compose.styles.background
-import me.shika.compose.styles.style
-import me.shika.compose.styles.textColor
+import me.shika.compose.values.*
 
 val messages = modelListOf<String>()
 private const val MESSAGE_LIMIT = 10

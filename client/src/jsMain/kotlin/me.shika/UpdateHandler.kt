@@ -30,7 +30,8 @@ class UpdateHandler(rootElement: HTMLElement, eventDispatcher: EventDispatcher) 
                 id = update.nodeId,
                 newEvents = update.events,
                 newAttrs = update.attributes,
-                newStyles = update.styles
+                newStyles = update.styles,
+                newProperties = update.properties
             )
         }
     }
