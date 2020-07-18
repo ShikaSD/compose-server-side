@@ -1,0 +1,23 @@
+plugins {
+    id 'org.jetbrains.kotlin.multiplatform'
+}
+
+dependencies {
+    kotlinCompilerPluginClasspath files(new File(rootProject.projectDir, "libs/compose-compiler.jar"))
+}
+
+
+kotlin {
+    js(IR) {
+        browser()
+        binaries.executable()
+    }
+    sourceSets {
+        jsMain {
+            dependencies {
+                implementation "org.jetbrains.kotlin:kotlin-stdlib-js"
+                implementation project(':compose-wrapper')
+            }
+        }
+    }
+}

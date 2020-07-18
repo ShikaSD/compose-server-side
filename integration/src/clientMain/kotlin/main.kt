@@ -1,7 +1,7 @@
+import kotlinx.browser.document
+import kotlinx.browser.window
 import me.shika.ComposeContent
 import org.w3c.dom.HTMLElement
-import kotlin.browser.document
-import kotlin.browser.window
 
 lateinit var content: ComposeContent
 

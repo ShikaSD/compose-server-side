@@ -14,7 +14,6 @@ tasks.withType(KotlinCompile) {
 kotlin {
     js('client', IR) {
         binaries.executable()
-        useCommonJs()
         browser()
     }
     jvm('server') {
