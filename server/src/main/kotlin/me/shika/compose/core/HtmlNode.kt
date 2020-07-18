@@ -5,11 +5,12 @@ import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.launch
 import me.shika.NodeDescription
 import me.shika.compose.RenderCommandDispatcher
-import me.shika.compose.attributes.Attribute
 import me.shika.compose.event.Event
 import me.shika.compose.event.EventDispatcher
 import me.shika.compose.event.EventPayload
-import me.shika.compose.styles.Style
+import me.shika.compose.values.Attribute
+import me.shika.compose.values.Property
+import me.shika.compose.values.Style
 import java.util.concurrent.atomic.AtomicLong
 
 sealed class HtmlNode {
@@ -34,13 +35,15 @@ sealed class HtmlNode {
                 }
                 val attributes = modifiers.filterIsInstance<Attribute>().associateBy({ it.key }, { it.value })
                 val styles = modifiers.filterIsInstance<Style>().associateBy({ it.property }, { it.value })
+                val properties = modifiers.filterIsInstance<Property>().associateBy({ it.key }, { it.value })
 
                 // todo: maybe diffing
                 commandDispatcher.update(
                     node = this,
                     events = events.map { it.key.type },
                     attributes = attributes,
-                    styles = styles
+                    styles = styles,
+                    properties = properties
                 )
 
                 this.styles = styles
@@ -49,8 +52,9 @@ sealed class HtmlNode {
             }
 
         internal var events: Map<Event, Event.Callback<*, *>> = emptyMap()
-        internal var attributes: Map<String, String?> = emptyMap()
+        internal var attributes: Map<String, String> = emptyMap()
         internal var styles: Map<String, String> = emptyMap()
+        internal var properties: Map<String, String?> = emptyMap()
 
         private val children: MutableList<HtmlNode> = mutableListOf()
 
@@ -111,6 +115,7 @@ sealed class HtmlNode {
                     this,
                     emptyList(),
                     mapOf("value" to value),
+                    emptyMap(),
                     emptyMap()
                 )
             }
@@ -125,8 +130,9 @@ sealed class HtmlNode {
                 id = id,
                 tag = tag,
                 attributes = attributes,
-                events = events.keys.map { it.type },
-                styles = styles
+                styles = styles,
+                properties = properties,
+                events = events.keys.map { it.type }
             )
             is Text -> NodeDescription.Text(
                 id = id,

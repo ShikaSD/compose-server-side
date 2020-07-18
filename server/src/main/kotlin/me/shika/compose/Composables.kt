@@ -6,12 +6,12 @@ import androidx.compose.composeThreadDispatcher
 import androidx.compose.compositionFor
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
-import me.shika.compose.attributes.attribute
 import me.shika.compose.core.HtmlNode
 import me.shika.compose.core.Modifier
 import me.shika.compose.core.ServerComposer
 import me.shika.compose.core.tag
 import me.shika.compose.event.onClick
+import me.shika.compose.values.attribute
 
 suspend fun composition(
     root: HtmlNode,

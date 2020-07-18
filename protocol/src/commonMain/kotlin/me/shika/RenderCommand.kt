@@ -49,8 +49,9 @@ sealed class NodeDescription {
     data class Tag(
         override val id: Long,
         val tag: String,
-        val attributes: Map<String, String?>,
+        val attributes: Map<String, String>,
         val styles: Map<String, String>,
+        val properties: Map<String, String?>,
         val events: List<String>
     ): NodeDescription()
 
@@ -66,8 +67,9 @@ sealed class NodeDescription {
 data class ValueUpdate(
     val nodeId: Long,
     val events: List<String>,
-    val attributes: Map<String, String?>,
-    val styles: Map<String, String>
+    val attributes: Map<String, String>,
+    val styles: Map<String, String>,
+    val properties: Map<String, String?>
 )
 
 

@@ -20,8 +20,9 @@ class NodeUpdater(private val rootElement: HTMLElement, private val eventDispatc
             }
             is NodeDescription.Tag -> document.createElement(node.tag) {
                 this as HTMLElement
-                diffAttributes(node.attributes)
-                diffStyles(node.styles)
+                applyAttributes(node.attributes)
+                applyStyles(node.styles)
+                applyProperties(node.properties)
 
                 node.events.forEach { event ->
                     eventDispatcher.registerEvent(node.id, this, event)
@@ -65,25 +66,49 @@ class NodeUpdater(private val rootElement: HTMLElement, private val eventDispatc
         }
     }
 
-    fun update(id: Long, newEvents: List<String>, newAttrs: Map<String, String?>, newStyles: Map<String, String>) {
+    fun update(
+        id: Long,
+        newEvents: List<String>,
+        newAttrs: Map<String, String>,
+        newStyles: Map<String, String>,
+        newProperties: Map<String, String?>
+    ) {
         val node = nodes[id]!!
         if (node is Text) {
             node.textContent = newAttrs["value"]
         } else if (node is HTMLElement) {
             eventDispatcher.updateEvents(id, node, newEvents)
-            node.diffAttributes(newAttrs)
-            node.diffStyles(newStyles)
+
+            node.applyAttributes(newAttrs)
+            node.applyProperties(newProperties)
+            node.applyStyles(newStyles)
         }
     }
 
-    private fun HTMLElement.diffAttributes(newAttrs: Map<String, String?>) {
-        // todo maybe set properties of the node differently?
-        newAttrs.forEach { (key, value) ->
+    private fun HTMLElement.applyProperties(newProperties: Map<String, String?>) {
+        newProperties.forEach { (key, value) ->
             asDynamic()[key] = value
         }
     }
 
-    private fun HTMLElement.diffStyles(newStyles: Map<String, String>) {
+    private fun HTMLElement.applyAttributes(newAttrs: Map<String, String>) {
+        val toRemove = mutableSetOf<Attr>()
+        for (attr in attributes.asList()) {
+            if (attr.name !in newAttrs) {
+                toRemove.add(attr)
+            }
+        }
+
+        toRemove.forEach {
+            removeAttribute(it.name)
+        }
+
+        newAttrs.forEach { (key, value) ->
+            setAttribute(key, value)
+        }
+    }
+
+    private fun HTMLElement.applyStyles(newStyles: Map<String, String>) {
         val toRemove = mutableSetOf<String>()
         for (prop in style.asList()) {
             if (prop !in newStyles) {
