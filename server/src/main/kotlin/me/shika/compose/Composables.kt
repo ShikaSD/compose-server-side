@@ -65,6 +65,13 @@ fun checkbox(isChecked: Boolean, modifier: Modifier = Modifier) {
 }
 
 @Composable
+fun label(text: String, modifier: Modifier = Modifier) {
+    tag("label", modifier) {
+        me.shika.compose.core.text(text)
+    }
+}
+
+@Composable
 fun input(
     type: String,
     value: String,

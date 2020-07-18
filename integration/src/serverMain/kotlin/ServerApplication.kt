@@ -1,6 +1,8 @@
 import androidx.compose.*
 import androidx.compose.frames.modelListOf
 import me.shika.compose.*
+import me.shika.compose.attributes.id
+import me.shika.compose.attributes.labelFor
 import me.shika.compose.core.Modifier
 import me.shika.compose.core.text
 import me.shika.compose.event.onChange
@@ -40,8 +42,14 @@ fun ComposeApp() {
             .fullSize()
     ) {
         div(Modifier.topRight()) {
-            checkbox(isChecked = darkTheme, modifier = Modifier.onChange { darkTheme = !darkTheme })
-            text("Dark theme")
+            val id = "is-dark"
+            checkbox(
+                isChecked = darkTheme,
+                modifier = Modifier
+                    .id(id)
+                    .onChange { darkTheme = !darkTheme }
+            )
+            label("Dark theme", modifier = Modifier.labelFor(id))
         }
 
         if (name == null) {

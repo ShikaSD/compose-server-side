@@ -12,3 +12,9 @@ fun Modifier.attribute(key: String, value: String?): Modifier =
 
 fun Modifier.className(value: String): Modifier =
     attribute("className", value)
+
+fun Modifier.id(value: String): Modifier =
+    attribute("id", value)
+
+fun Modifier.labelFor(value: String): Modifier =
+    attribute("htmlFor", value)
