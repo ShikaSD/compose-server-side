@@ -9,3 +9,6 @@ data class Attribute(
 
 fun Modifier.attribute(key: String, value: String?): Modifier =
     this + Attribute(key, value)
+
+fun Modifier.className(value: String): Modifier =
+    attribute("className", value)

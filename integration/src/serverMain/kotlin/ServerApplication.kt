@@ -3,8 +3,11 @@ import androidx.compose.frames.modelListOf
 import me.shika.compose.*
 import me.shika.compose.core.Modifier
 import me.shika.compose.core.text
-import me.shika.compose.event.change
-import me.shika.compose.event.keyup
+import me.shika.compose.event.onChange
+import me.shika.compose.event.onKeyUp
+import me.shika.compose.styles.background
+import me.shika.compose.styles.style
+import me.shika.compose.styles.textColor
 
 val messages = modelListOf<String>()
 private const val MESSAGE_LIMIT = 10
@@ -16,11 +19,31 @@ fun addMessage(from: String, message: String) {
     }
 }
 
+private fun Modifier.fullSize(): Modifier =
+    style("overflow", "hidden")
+        .style("height", "100%")
+        .style("width", "100%")
+
+private fun Modifier.topRight(): Modifier =
+    style("position", "absolute")
+        .style("right", "0")
+
 @Composable
 fun ComposeApp() {
     var name by state<String?> { null }
+    var darkTheme by state { false }
 
-    div {
+    div(
+        modifier = Modifier
+            .textColor(if (darkTheme) "white" else "black")
+            .background(if (darkTheme) "black" else "white")
+            .fullSize()
+    ) {
+        div(Modifier.topRight()) {
+            checkbox(isChecked = darkTheme, modifier = Modifier.onChange { darkTheme = !darkTheme })
+            text("Dark theme")
+        }
+
         if (name == null) {
             h1 {
                 text("Hi, please enter your name")
@@ -45,8 +68,8 @@ fun MessageList(name: String) {
         text("Hi, $name, this chat has ${messages.size} messages out of max $MESSAGE_LIMIT")
     }
 
-    messages.forEach {
-        p {
+    messages.forEachIndexed { i, it ->
+        p(Modifier.textColor(if (i % 2 == 0) "red" else "blue")) {
             text(it)
         }
     }
@@ -66,8 +89,8 @@ fun Input(onSent: (message: String) -> Unit) {
             type = "text",
             value = message,
             modifier = Modifier
-                .change { message = it }
-                .keyup { if (it == "Enter") send() }
+                .onChange { message = it }
+                .onKeyUp { if (it == "Enter") send() }
         )
         button(text = "Send") { send() }
     }

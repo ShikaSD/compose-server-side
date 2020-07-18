@@ -57,13 +57,14 @@ class RenderCommandDispatcher(
             )
     }
 
-    fun update(node: HtmlNode, events: List<String>, values: Map<String, String?>) {
+    fun update(node: HtmlNode, events: List<String>, attributes: Map<String, String?>, styles: Map<String, String>) {
         if (node.parent == null) return // ignore if node is not attached, it will be serialized fully when added
         pendingValueUpdates +=
             ValueUpdate(
                 node.id,
                 events,
-                values
+                attributes,
+                styles
             )
     }
 

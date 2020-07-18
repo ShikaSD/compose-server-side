@@ -19,11 +19,10 @@ class NodeUpdater(private val rootElement: HTMLElement, private val eventDispatc
                 nodes[node.id] = this
             }
             is NodeDescription.Tag -> document.createElement(node.tag) {
-                with (asDynamic()) {
-                    node.attributes.forEach {
-                        this[it.key] = it.value
-                    }
-                }
+                this as HTMLElement
+                diffAttributes(node.attributes)
+                diffStyles(node.styles)
+
                 node.events.forEach { event ->
                     eventDispatcher.registerEvent(node.id, this, event)
                 }
@@ -66,38 +65,38 @@ class NodeUpdater(private val rootElement: HTMLElement, private val eventDispatc
         }
     }
 
-    fun update(id: Long, newEvents: List<String>, newAttrs: Map<String, String?>) {
+    fun update(id: Long, newEvents: List<String>, newAttrs: Map<String, String?>, newStyles: Map<String, String>) {
         val node = nodes[id]!!
         if (node is Text) {
             node.textContent = newAttrs["value"]
         } else if (node is HTMLElement) {
-            // diff events
             eventDispatcher.updateEvents(id, node, newEvents)
-
-            // diff attrs
             node.diffAttributes(newAttrs)
+            node.diffStyles(newStyles)
         }
     }
 
     private fun HTMLElement.diffAttributes(newAttrs: Map<String, String?>) {
-        val toRemove = mutableSetOf<Attr>()
-        for (i in 0 until attributes.length) {
-            val attr = attributes.item(i)
-            if (attr != null && attr?.name !in newAttrs) {
-                toRemove.add(attr)
+        // todo maybe set properties of the node differently?
+        newAttrs.forEach { (key, value) ->
+            asDynamic()[key] = value
+        }
+    }
+
+    private fun HTMLElement.diffStyles(newStyles: Map<String, String>) {
+        val toRemove = mutableSetOf<String>()
+        for (prop in style.asList()) {
+            if (prop !in newStyles) {
+                toRemove.add(prop)
             }
         }
 
         toRemove.forEach {
-            attributes.removeNamedItem(it.name)
+            style.removeProperty(it)
         }
 
-        newAttrs.forEach { (key, value) ->
-            if (value != null) {
-                setAttribute(key, value)
-            } else {
-                removeAttribute(key)
-            }
+        newStyles.forEach { (key, value) ->
+            style.setProperty(key, value)
         }
     }
 }

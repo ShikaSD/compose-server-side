@@ -26,7 +26,12 @@ class UpdateHandler(rootElement: HTMLElement, eventDispatcher: EventDispatcher) 
         }
 
         for (update in renderCommand.valueUpdates) {
-            nodeUpdater.update(id = update.nodeId, newEvents = update.events, newAttrs = update.attributes)
+            nodeUpdater.update(
+                id = update.nodeId,
+                newEvents = update.events,
+                newAttrs = update.attributes,
+                newStyles = update.styles
+            )
         }
     }
 }

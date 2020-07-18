@@ -29,7 +29,7 @@ object Click : Event {
     }
 }
 
-fun Modifier.click(callback: () -> Unit) =
+fun Modifier.onClick(callback: () -> Unit) =
     this + Click.Callback { callback() }
 
 object Change : Event {
@@ -44,7 +44,7 @@ object Change : Event {
     }
 }
 
-fun Modifier.change(callback: (String) -> Unit) =
+fun Modifier.onChange(callback: (String) -> Unit) =
     this + Change.Callback { callback(it.value) }
 
 object Input : Event {
@@ -59,7 +59,7 @@ object Input : Event {
     }
 }
 
-fun Modifier.input(callback: (String) -> Unit) =
+fun Modifier.onInput(callback: (String) -> Unit) =
     this + Input.Callback { callback(it.value) }
 
 object KeyUp : Event {
@@ -74,5 +74,5 @@ object KeyUp : Event {
     }
 }
 
-fun Modifier.keyup(callback: (String) -> Unit) =
+fun Modifier.onKeyUp(callback: (String) -> Unit) =
     this + KeyUp.Callback { callback(it.value) }

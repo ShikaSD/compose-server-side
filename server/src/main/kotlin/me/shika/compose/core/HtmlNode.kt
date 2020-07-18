@@ -9,6 +9,7 @@ import me.shika.compose.attributes.Attribute
 import me.shika.compose.event.Event
 import me.shika.compose.event.EventDispatcher
 import me.shika.compose.event.EventPayload
+import me.shika.compose.styles.Style
 import java.util.concurrent.atomic.AtomicLong
 
 sealed class HtmlNode {
@@ -22,35 +23,34 @@ sealed class HtmlNode {
     ) : HtmlNode() {
         lateinit var eventDispatcher: EventDispatcher
 
+        // todo: replace with a method?
         var modifier: Modifier = Modifier
             set(value) {
                 field = value
+
                 val modifiers = value.toList()
                 val events = modifiers.filterIsInstance<Event.Callback<*, *>>().associateBy {
                     it.descriptor
                 }
                 val attributes = modifiers.filterIsInstance<Attribute>().associateBy({ it.key }, { it.value })
+                val styles = modifiers.filterIsInstance<Style>().associateBy({ it.property }, { it.value })
 
+                // todo: maybe diffing
                 commandDispatcher.update(
-                    this,
-                    events.map { it.key.type },
-                    attributes
+                    node = this,
+                    events = events.map { it.key.type },
+                    attributes = attributes,
+                    styles = styles
                 )
 
+                this.styles = styles
                 this.attributes = attributes
                 this.events = events
             }
 
-        // todo: combine dispatch of events and attributes
         internal var events: Map<Event, Event.Callback<*, *>> = emptyMap()
-            set(value) {
-                field = value
-            }
-
         internal var attributes: Map<String, String?> = emptyMap()
-            set(value) {
-                field = value
-            }
+        internal var styles: Map<String, String> = emptyMap()
 
         private val children: MutableList<HtmlNode> = mutableListOf()
 
@@ -99,17 +99,19 @@ sealed class HtmlNode {
         }
 
         override fun toString(): String =
-            "Tag(id=$id, tag=$tag, events=$events, attrs=$attributes)"
+            "Tag(id=$id, tag=$tag, events=$events, attrs=$attributes, styles=$styles)"
     }
 
     class Text(private val commandDispatcher: RenderCommandDispatcher): HtmlNode() {
         var value: String = ""
             set(value) {
                 field = value
+                // todo: maybe pass description, text does not require all this info
                 commandDispatcher.update(
                     this,
                     emptyList(),
-                    mapOf("value" to value)
+                    mapOf("value" to value),
+                    emptyMap()
                 )
             }
 
@@ -123,7 +125,8 @@ sealed class HtmlNode {
                 id = id,
                 tag = tag,
                 attributes = attributes,
-                events = events.keys.map { it.type }
+                events = events.keys.map { it.type },
+                styles = styles
             )
             is Text -> NodeDescription.Text(
                 id = id,

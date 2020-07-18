@@ -11,7 +11,7 @@ import me.shika.compose.core.HtmlNode
 import me.shika.compose.core.Modifier
 import me.shika.compose.core.ServerComposer
 import me.shika.compose.core.tag
-import me.shika.compose.event.click
+import me.shika.compose.event.onClick
 
 suspend fun composition(
     root: HtmlNode,
@@ -49,9 +49,19 @@ fun p(modifier: Modifier = Modifier, children: @Composable() () -> Unit) {
 
 @Composable
 fun button(text: String, modifier: Modifier = Modifier, onClick: () -> Unit) {
-    tag(tagName = "button", modifier = modifier.click(onClick)) {
+    tag(tagName = "button", modifier = modifier.onClick(onClick)) {
         me.shika.compose.core.text(text)
     }
+}
+
+@Composable
+fun checkbox(isChecked: Boolean, modifier: Modifier = Modifier) {
+    tag(
+        tagName = "input",
+        modifier = modifier
+            .attribute("type", "checkbox")
+            .attribute("value", "$isChecked")
+    ) { }
 }
 
 @Composable
@@ -67,5 +77,6 @@ fun input(
             .attribute("value", value),
         children = { }
     )
+
 }
 
