@@ -6,9 +6,12 @@ import androidx.compose.composeThreadDispatcher
 import androidx.compose.compositionFor
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
-
-val composer: ServerComposer
-    get() = throw IllegalStateException("Required for compiler")
+import me.shika.compose.attributes.attribute
+import me.shika.compose.core.HtmlNode
+import me.shika.compose.core.Modifier
+import me.shika.compose.core.ServerComposer
+import me.shika.compose.core.tag
+import me.shika.compose.event.click
 
 suspend fun composition(
     root: HtmlNode,
@@ -30,93 +33,39 @@ suspend fun composition(
 }
 
 @Composable
-fun div(className: String? = null, children: @Composable() () -> Unit = {}) {
-    tag(tagName = "div", className = className, children = children)
+fun div(modifier: Modifier = Modifier, children: @Composable() () -> Unit = {}) {
+    tag(tagName = "div",  modifier = modifier, children = children)
 }
 
 @Composable
-fun h1(className: String? = null, children: @Composable() () -> Unit = {}) {
-    tag(tagName = "h1", className = className, children = children)
+fun h1(modifier: Modifier = Modifier, children: @Composable() () -> Unit = {}) {
+    tag(tagName = "h1", modifier = modifier, children = children)
 }
 
 @Composable
-fun h2(className: String? = null, children: @Composable() () -> Unit = {}) {
-    tag(tagName = "h2", className = className, children = children)
+fun p(modifier: Modifier = Modifier, children: @Composable() () -> Unit) {
+    tag(tagName = "p", modifier = modifier, children = children)
 }
 
 @Composable
-fun p(children: @Composable() () -> Unit) {
-    tag(tagName = "p", attributes = emptyMap(), events = emptyMap(), children = children)
-}
-
-@Composable
-fun button(className: String? = null, text: String, onClick: () -> Unit) {
-    tag(tagName = "button", className = className, onClick = { onClick() }) {
-        text(text)
+fun button(text: String, modifier: Modifier = Modifier, onClick: () -> Unit) {
+    tag(tagName = "button", modifier = modifier.click(onClick)) {
+        me.shika.compose.core.text(text)
     }
 }
 
 @Composable
 fun input(
     type: String,
-    onChange: ((String) -> Unit)? = null,
-    onInput: ((String) -> Unit)? = null
+    value: String,
+    modifier: Modifier
 ) {
     tag(
         tagName = "input",
-        attributes = mapOf("type" to type),
-        events =
-            listOfNotNull(
-                onChange?.let { Change.Callback { it(it.value) } },
-                onInput?.let { Input.Callback { it(it.value) } }
-            ).associateBy { it.descriptor } as EventMap,
+        modifier = modifier
+            .attribute("type", type)
+            .attribute("value", value),
         children = { }
     )
 }
 
-@Composable
-fun tag(
-    tagName: String,
-    className: String? = null,
-    onClick: (() -> Unit)? = null,
-    children: @Composable() () -> Unit
-) {
-
-    val attributes =
-        if (className != null) {
-            mapOf("className" to className)
-        } else {
-            emptyMap()
-        }
-
-    val events: EventMap =
-        if (onClick != null) {
-            mapOf(Click to Click.Callback { onClick() }) as EventMap
-        } else {
-            emptyMap()
-        }
-
-    tag(
-        tagName,
-        attributes,
-        events,
-        children
-    )
-}
-
-@Composable
-fun tag(
-    tagName: String,
-    attributes: Map<String, String>,
-    events: EventMap,
-    children: @Composable() () -> Unit
-) {
-    HtmlNode.Tag(tag = tagName, events = events, attributes = attributes) {
-        children()
-    }
-}
-
-@Composable
-fun text(value: String) {
-    HtmlNode.Text(value = value)
-}

@@ -1,8 +1,9 @@
 @file:OptIn(ExperimentalComposeApi::class)
 
-package me.shika.compose
+package me.shika.compose.core
 
 import androidx.compose.*
+import me.shika.compose.RenderCommandDispatcher
 
 typealias ServerUpdater<T> = ComposerUpdater<HtmlNode, T>
 

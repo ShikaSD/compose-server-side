@@ -1,38 +1,55 @@
-package me.shika.compose
+package me.shika.compose.core
 
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.launch
 import me.shika.NodeDescription
+import me.shika.compose.RenderCommandDispatcher
+import me.shika.compose.attributes.Attribute
+import me.shika.compose.event.Event
+import me.shika.compose.event.EventDispatcher
+import me.shika.compose.event.EventPayload
 import java.util.concurrent.atomic.AtomicLong
-
-typealias EventMap = Map<Event, Event.Callback<*, Event.Payload<*>>>
 
 sealed class HtmlNode {
     val id: Long = nextId.getAndIncrement()
-    open val events: EventMap = emptyMap()
 
-    lateinit var eventDispatcher: EventDispatcher
     var parent: HtmlNode? = null
-
-    fun observe(eventDispatcher: EventDispatcher, channel: Channel<EventPayload<*>>) {
-        this.eventDispatcher = eventDispatcher
-        eventDispatcher.launch {
-            channel.consumeEach {
-                events[it.payload.descriptor]?.onReceive?.invoke(it.payload)
-            }
-        }
-    }
 
     data class Tag(
         private val commandDispatcher: RenderCommandDispatcher,
-        val tag: String,
-        override val events: EventMap = emptyMap()
+        val tag: String
     ) : HtmlNode() {
-        var attributes: Map<String, String?> = emptyMap()
+        lateinit var eventDispatcher: EventDispatcher
+
+        var modifier: Modifier = Modifier
             set(value) {
                 field = value
-                commandDispatcher.update(this, value)
+                val modifiers = value.toList()
+                val events = modifiers.filterIsInstance<Event.Callback<*, *>>().associateBy {
+                    it.descriptor
+                }
+                val attributes = modifiers.filterIsInstance<Attribute>().associateBy({ it.key }, { it.value })
+
+                commandDispatcher.update(
+                    this,
+                    events.map { it.key.type },
+                    attributes
+                )
+
+                this.attributes = attributes
+                this.events = events
+            }
+
+        // todo: combine dispatch of events and attributes
+        internal var events: Map<Event, Event.Callback<*, *>> = emptyMap()
+            set(value) {
+                field = value
+            }
+
+        internal var attributes: Map<String, String?> = emptyMap()
+            set(value) {
+                field = value
             }
 
         private val children: MutableList<HtmlNode> = mutableListOf()
@@ -70,15 +87,28 @@ sealed class HtmlNode {
                 eventDispatcher.removeNode(instance)
             }
         }
+
+        fun observe(eventDispatcher: EventDispatcher, channel: Channel<EventPayload<*>>) {
+            this.eventDispatcher = eventDispatcher
+            eventDispatcher.launch {
+                channel.consumeEach {
+                    val receive = events[it.payload.descriptor]?.onReceive as? (Any) -> Unit
+                    receive?.invoke(it.payload) ?: error("Callback for event ${it.payload.descriptor} not found")
+                }
+            }
+        }
+
+        override fun toString(): String =
+            "Tag(id=$id, tag=$tag, events=$events, attrs=$attributes)"
     }
 
     class Text(private val commandDispatcher: RenderCommandDispatcher): HtmlNode() {
         var value: String = ""
             set(value) {
                 field = value
-                println("update $this")
                 commandDispatcher.update(
                     this,
+                    emptyList(),
                     mapOf("value" to value)
                 )
             }

@@ -1,6 +1,10 @@
 import androidx.compose.*
 import androidx.compose.frames.modelListOf
 import me.shika.compose.*
+import me.shika.compose.core.Modifier
+import me.shika.compose.core.text
+import me.shika.compose.event.change
+import me.shika.compose.event.keyup
 
 val messages = modelListOf<String>()
 private const val MESSAGE_LIMIT = 10
@@ -52,12 +56,19 @@ fun MessageList(name: String) {
 fun Input(onSent: (message: String) -> Unit) {
     var message by mutableStateOf("")
 
+    fun send() {
+        onSent(message)
+        message = ""
+    }
+
     div {
-        input(type = "text", onChange = {
-            message = it
-        })
-        button(text = "Send") {
-            onSent(message)
-        }
+        input(
+            type = "text",
+            value = message,
+            modifier = Modifier
+                .change { message = it }
+                .keyup { if (it == "Enter") send() }
+        )
+        button(text = "Send") { send() }
     }
 }

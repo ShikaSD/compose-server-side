@@ -11,6 +11,7 @@ import kotlinx.serialization.UnstableDefault
 import me.shika.NodeUpdate
 import me.shika.RenderCommand
 import me.shika.ValueUpdate
+import me.shika.compose.core.HtmlNode
 import java.util.concurrent.Executors
 import kotlin.coroutines.CoroutineContext
 
@@ -56,11 +57,12 @@ class RenderCommandDispatcher(
             )
     }
 
-    fun update(node: HtmlNode, values: Map<String, String?>) {
+    fun update(node: HtmlNode, events: List<String>, values: Map<String, String?>) {
         if (node.parent == null) return // ignore if node is not attached, it will be serialized fully when added
         pendingValueUpdates +=
             ValueUpdate(
                 node.id,
+                events,
                 values
             )
     }

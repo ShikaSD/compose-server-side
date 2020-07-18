@@ -11,11 +11,25 @@ class EventDispatcher(
         node: Node,
         name: String
     ) {
-        eventRegistry.handlers().forEach {
-            it.addEvent(
-                name,
-                node
-            ) { value -> dispatchEvent(nodeId, name, value) }
+        eventRegistry.addEvent(
+            name,
+            node
+        ) { value -> dispatchEvent(nodeId, name, value) }
+    }
+
+    fun updateEvents(nodeId: Long, node: Node, events: List<String>) {
+        val existing = eventRegistry.listeners(node)
+        val toRemove = existing.filter { it.name !in events }
+        val toAdd = events.filter { newEvent -> existing.none { it.name == newEvent } }
+        toRemove.forEach { eventRegistry.removeEvent(it, node) }
+        toAdd.forEach { name ->
+            eventRegistry.addEvent(name, node) { dispatchEvent(nodeId, name, it) }
+        }
+    }
+
+    fun clearEvents(node: Node) {
+        eventRegistry.listeners(node).forEach {
+            eventRegistry.removeEvent(it, node)
         }
     }
 

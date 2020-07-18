@@ -1,9 +1,6 @@
 package me.shika
 
-import org.w3c.dom.HTMLElement
-import org.w3c.dom.Node
-import org.w3c.dom.Text
-import org.w3c.dom.get
+import org.w3c.dom.*
 import kotlin.browser.document
 import kotlin.dom.createElement
 
@@ -45,6 +42,7 @@ class NodeUpdater(private val rootElement: HTMLElement, private val eventDispatc
         val parent = nodes[parentId]!! as HTMLElement
         repeat(count) {
             val removed = parent.childNodes[index]!!
+            eventDispatcher.clearEvents(removed)
             parent.removeChild(removed)
         }
     }
@@ -68,12 +66,38 @@ class NodeUpdater(private val rootElement: HTMLElement, private val eventDispatc
         }
     }
 
-    fun update(id: Long, newValues: Map<String, String?>) {
+    fun update(id: Long, newEvents: List<String>, newAttrs: Map<String, String?>) {
         val node = nodes[id]!!
         if (node is Text) {
-            node.textContent = newValues["value"]
+            node.textContent = newAttrs["value"]
         } else if (node is HTMLElement) {
-            node.className = newValues["className"].orEmpty()
+            // diff events
+            eventDispatcher.updateEvents(id, node, newEvents)
+
+            // diff attrs
+            node.diffAttributes(newAttrs)
+        }
+    }
+
+    private fun HTMLElement.diffAttributes(newAttrs: Map<String, String?>) {
+        val toRemove = mutableSetOf<Attr>()
+        for (i in 0 until attributes.length) {
+            val attr = attributes.item(i)
+            if (attr != null && attr?.name !in newAttrs) {
+                toRemove.add(attr)
+            }
+        }
+
+        toRemove.forEach {
+            attributes.removeNamedItem(it.name)
+        }
+
+        newAttrs.forEach { (key, value) ->
+            if (value != null) {
+                setAttribute(key, value)
+            } else {
+                removeAttribute(key)
+            }
         }
     }
 }

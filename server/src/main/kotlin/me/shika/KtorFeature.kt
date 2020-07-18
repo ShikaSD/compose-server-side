@@ -2,15 +2,10 @@ package me.shika
 
 import androidx.compose.Composable
 import io.ktor.application.*
-import io.ktor.http.cio.websocket.Frame
-import io.ktor.http.cio.websocket.pingPeriod
-import io.ktor.http.cio.websocket.readText
-import io.ktor.http.cio.websocket.timeout
-import io.ktor.routing.Route
-import io.ktor.util.AttributeKey
-import io.ktor.websocket.WebSockets
-import io.ktor.websocket.application
-import io.ktor.websocket.webSocket
+import io.ktor.http.cio.websocket.*
+import io.ktor.routing.*
+import io.ktor.util.*
+import io.ktor.websocket.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.asCoroutineDispatcher
@@ -20,19 +15,17 @@ import kotlinx.serialization.ImplicitReflectionSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 import kotlinx.serialization.stringify
-import me.shika.compose.*
+import me.shika.compose.RenderCommandDispatcher
+import me.shika.compose.composition
+import me.shika.compose.core.HtmlNode
+import me.shika.compose.event.EventDispatcher
+import me.shika.compose.event.EventDistributor
+import me.shika.compose.event.EventProcessor
 import java.time.Duration
 import java.util.concurrent.Executors
 import kotlin.coroutines.CoroutineContext
 
-fun Application.module() {
-    install(WebSockets) {
-        pingPeriod = Duration.ofSeconds(60) // Disabled (null) by default
-        timeout = Duration.ofSeconds(15)
-    }
-}
-
-class Compose: CoroutineScope {
+class Compose(internal val eventProcessor: EventProcessor = EventProcessor.Default): CoroutineScope {
     private val job = SupervisorJob()
     private val eventDispatcherThread = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
 
@@ -66,7 +59,10 @@ class Compose: CoroutineScope {
 }
 
 @OptIn(ImplicitReflectionSerializer::class)
-fun Route.compose(webSocketPath: String, body: @Composable() () -> Unit) {
+fun Route.compose(
+    webSocketPath: String,
+    body: @Composable() () -> Unit
+) {
     webSocket(webSocketPath) {
         val feature = application.feature(Compose)
 
@@ -74,7 +70,7 @@ fun Route.compose(webSocketPath: String, body: @Composable() () -> Unit) {
 
         val commandDispatcher = RenderCommandDispatcher(coroutineContext = feature.coroutineContext)
         val eventDispatcher = EventDispatcher()
-        val eventProcessor = EventProcessor(eventDispatcher)
+        val eventDistributor = EventDistributor(eventDispatcher, feature.eventProcessor)
 
         feature.launch {
             commandDispatcher.consumeEach {
@@ -93,7 +89,7 @@ fun Route.compose(webSocketPath: String, body: @Composable() () -> Unit) {
             when (it) {
                 is Frame.Text -> {
                     val event = json.parse(ClientEvent.serializer(), it.readText())
-                    eventProcessor.process(event)
+                    eventDistributor.evaluate(event)
                 }
             }
         }
