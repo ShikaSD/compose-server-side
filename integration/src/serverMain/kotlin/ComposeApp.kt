@@ -5,6 +5,7 @@ import me.shika.compose.div
 import me.shika.compose.values.*
 import screens.ChatScreen
 import screens.MainScreen
+import screens.TodoList
 
 private fun Modifier.fullSize(): Modifier =
     style("overflow", "hidden")
@@ -59,7 +60,7 @@ fun DemoApp() {
         ) {
             when (currentScreen) {
                 MAIN -> MainScreen(items = listOf(TODO, CHAT), onScreenChange = { currentScreen = it })
-                TODO -> TODO()
+                TODO -> TodoList()
                 CHAT -> ChatScreen()
             }
         }
