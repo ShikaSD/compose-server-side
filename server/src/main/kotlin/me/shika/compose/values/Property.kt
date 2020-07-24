@@ -1,6 +1,7 @@
 package me.shika.compose.values
 
 import me.shika.compose.core.Modifier
+import me.shika.compose.core.wrap
 
 /**
  * Controls JS properties of DOM elements
@@ -13,4 +14,4 @@ data class Property(
 ) : Modifier
 
 fun Modifier.value(text: String): Modifier =
-    this + Property("value", text)
+    this wrap Property("value", text)

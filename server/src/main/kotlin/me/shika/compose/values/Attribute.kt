@@ -1,6 +1,7 @@
 package me.shika.compose.values
 
 import me.shika.compose.core.Modifier
+import me.shika.compose.core.wrap
 
 /**
  * Html tag attributes of the node
@@ -13,7 +14,7 @@ data class Attribute(
 ) : Modifier
 
 fun Modifier.attribute(key: String, value: String): Modifier =
-    this + Attribute(key, value)
+    this wrap Attribute(key, value)
 
 fun Modifier.className(value: String): Modifier =
     attribute("class", value)

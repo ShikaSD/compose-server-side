@@ -27,6 +27,9 @@ sealed class HtmlNode {
         // todo: replace with a method?
         var modifier: Modifier = Modifier
             set(value) {
+                if (value == field) {
+                    return
+                }
                 field = value
 
                 val modifiers = value.toList()
