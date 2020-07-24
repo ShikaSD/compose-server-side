@@ -34,7 +34,7 @@ class SidebarScope {
             modifier = Modifier
                 .style("flex-basis", "20rem")
                 .style("flex-grow", "1")
-                .style("border-right", "1px solid ${theme.highlightColor}")
+                .style("border-right", "1px solid ${theme.highlight}")
         ) {
             children()
         }
@@ -59,7 +59,7 @@ fun SidebarHeader(item: Screen, onMainClick: () -> Unit, onThemeChange: (Theme) 
     div(Modifier
         .style("display", "flex")
         .style("margin-bottom", "20px")
-        .style("border-bottom", "1px solid ${theme.highlightColor}")
+        .style("border-bottom", "1px solid ${theme.highlight}")
     ) {
         a(modifier = Modifier
             .onClick(onMainClick)
@@ -90,7 +90,7 @@ fun SidebarItems(current: Screen, items: List<Screen>, onItemClick: (Screen) -> 
                     .style("font-size", Theme.FontSize.SMALL)
                     .run {
                         if (current == it) {
-                            background(Theme.Ambient.current.highlightColor)
+                            background(Theme.Ambient.current.highlight)
                         } else {
                             this
                         }

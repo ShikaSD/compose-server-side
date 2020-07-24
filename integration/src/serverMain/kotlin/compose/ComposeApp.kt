@@ -65,8 +65,8 @@ private fun FullPage(children: @Composable () -> Unit) {
     div(modifier = Modifier
         .fullSize()
         .className("content")
-        .background(Theme.Ambient.current.bgColor)
-        .textColor(Theme.Ambient.current.fgColor)
+        .background(Theme.Ambient.current.background)
+        .textColor(Theme.Ambient.current.foreground)
     ) {
         children()
     }

@@ -20,7 +20,7 @@ fun MainScreen() {
             text("You can check different single page examples using navigation on the side.")
             br()
             br()
-            text("Don't forget to check out this demo source code on ")
+            text("Don't forget to check out source code on ")
             a(href = GITHUB_BASE_LINK) {
                 text("GitHub.")
             }

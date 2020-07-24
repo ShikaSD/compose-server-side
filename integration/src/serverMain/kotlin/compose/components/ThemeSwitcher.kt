@@ -32,8 +32,8 @@ fun ThemeSwitcher(labelModifier: Modifier = Modifier, onThemeChanged: (Theme) ->
                 .labelFor("theme-switcher")
                 .hover { hovered ->
                     this
-                        .background(if (hovered) targetTheme.highlightColor else currentTheme.highlightColor)
-                        .textColor(if (hovered) targetTheme.fgColor else currentTheme.fgColor)
+                        .background(if (hovered) targetTheme.highlight else currentTheme.highlight)
+                        .textColor(if (hovered) targetTheme.foreground else currentTheme.foreground)
 
                 }
                 .style("font-size", Theme.FontSize.SMALL)

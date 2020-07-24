@@ -9,6 +9,26 @@ body, html {
     font-family: "Menlo", "Consolas", monospace, sans-serif;
 }
 
+input {
+    font-family: "Menlo", "Consolas", monospace, sans-serif;
+    border: none;
+    inset: none;
+    background: none;
+    box-shadow: none;
+    outline: none;
+}
+
+button {
+    font-family: "Menlo", "Consolas", monospace, sans-serif;
+    background: none;
+    border: none;
+    outline: none;
+}
+
+button:disabled {
+    opacity: 0.4;
+}
+
 a {
     color: inherit;
 }

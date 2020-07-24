@@ -49,6 +49,16 @@ fun input(
 }
 
 @Composable
+fun textarea(
+    modifier: Modifier
+) {
+    tag(
+        tagName = "textarea",
+        modifier = modifier,
+    ) { }
+}
+
+@Composable
 fun checkbox(isChecked: Boolean, modifier: Modifier = Modifier) {
     input(
         type = "checkbox",
