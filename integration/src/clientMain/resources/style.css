@@ -1,0 +1,25 @@
+body, html {
+    padding: 0;
+    margin: 0;
+    height: 100%;
+}
+
+.compose {
+    overflow: hidden;
+    height: 100%;
+}
+
+.content {
+    display: grid;
+}
+
+.main {
+    place-self: center;
+}
+
+button.primary {
+    display: block;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 8px;
+}

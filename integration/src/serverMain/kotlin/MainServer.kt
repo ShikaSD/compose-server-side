@@ -1,12 +1,9 @@
-import io.ktor.application.Application
-import io.ktor.application.install
-import io.ktor.http.ContentType
-import io.ktor.http.content.resource
-import io.ktor.http.content.static
-import io.ktor.routing.accept
-import io.ktor.routing.routing
-import io.ktor.server.engine.embeddedServer
-import io.ktor.server.netty.Netty
+import io.ktor.application.*
+import io.ktor.http.*
+import io.ktor.http.content.*
+import io.ktor.routing.*
+import io.ktor.server.engine.*
+import io.ktor.server.netty.*
 import me.shika.Compose
 import me.shika.compose
 
@@ -27,6 +24,7 @@ fun Application.module() {
         static {
             resource("integration.js")
             resource("integration.js.map")
+            resource("style.css")
         }
 
         accept(ContentType.Text.Html) {
@@ -34,7 +32,7 @@ fun Application.module() {
         }
 
         compose("/websocket") {
-            ComposeApp()
+            DemoApp()
         }
     }
 }

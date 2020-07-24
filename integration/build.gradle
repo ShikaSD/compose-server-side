@@ -35,11 +35,6 @@ kotlin {
     }
 
     sourceSets {
-        commonMain {
-            dependencies {
-                implementation project(':protocol')
-            }
-        }
         clientMain {
             dependencies {
                 implementation kotlin('stdlib-js')

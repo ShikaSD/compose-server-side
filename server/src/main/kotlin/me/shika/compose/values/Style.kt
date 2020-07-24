@@ -1,6 +1,7 @@
 package me.shika.compose.values
 
 import me.shika.compose.core.Modifier
+import me.shika.compose.core.wrap
 
 /**
  * Inline css style definition for the node
@@ -12,10 +13,20 @@ data class Style(
 ) : Modifier
 
 fun Modifier.style(property: String, value: String): Modifier =
-    this + Style(property, value)
+    this wrap Style(property, value)
 
 fun Modifier.textColor(value: String): Modifier =
     style("color", value)
 
 fun Modifier.background(value: String): Modifier =
     style("background", value)
+
+fun Modifier.width(value: String): Modifier =
+    style("width", value)
+
+fun Modifier.height(value: String): Modifier =
+    style("height", value)
+
+fun Modifier.marginAuto(): Modifier =
+    style("margin", "auto")
+

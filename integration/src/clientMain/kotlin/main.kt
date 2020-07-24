@@ -6,7 +6,7 @@ import kotlin.browser.window
 lateinit var content: ComposeContent
 
 fun main() {
-    val root = document.querySelector(".content") as HTMLElement
+    val root = document.querySelector(".compose") as HTMLElement
     val protocol = if (window.location.protocol == "https:") "wss" else "ws"
     content = ComposeContent(root, "$protocol://${window.location.host}/websocket")
 }

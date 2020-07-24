@@ -1,6 +1,7 @@
 package me.shika.compose.event
 
 import me.shika.compose.core.Modifier
+import me.shika.compose.core.wrap
 
 data class EventPayload<T : Event.Payload<*>>(val targetId: Long, val payload: T)
 
@@ -30,7 +31,7 @@ object Click : Event {
 }
 
 fun Modifier.onClick(callback: () -> Unit) =
-    this + Click.Callback { callback() }
+    this wrap Click.Callback { callback() }
 
 object Change : Event {
     override val type: String = "change"
@@ -45,7 +46,7 @@ object Change : Event {
 }
 
 fun Modifier.onChange(callback: (String) -> Unit) =
-    this + Change.Callback { callback(it.value) }
+    this wrap Change.Callback { callback(it.value) }
 
 object Input : Event {
     override val type: String = "input"
@@ -60,7 +61,7 @@ object Input : Event {
 }
 
 fun Modifier.onInput(callback: (String) -> Unit) =
-    this + Input.Callback { callback(it.value) }
+    this wrap Input.Callback { callback(it.value) }
 
 object KeyUp : Event {
     override val type: String = "keyup"
@@ -75,7 +76,7 @@ object KeyUp : Event {
 }
 
 fun Modifier.onKeyUp(callback: (String) -> Unit) =
-    this + KeyUp.Callback { callback(it.value) }
+    this wrap KeyUp.Callback { callback(it.value) }
 
 object MouseEnter : Event {
     override val type: String = "mouseenter"
@@ -90,7 +91,7 @@ object MouseEnter : Event {
 }
 
 fun Modifier.onMouseEnter(callback: () -> Unit) =
-    this + MouseEnter.Callback { callback() }
+    this wrap MouseEnter.Callback { callback() }
 
 object MouseLeave : Event {
     override val type: String = "mouseleave"
@@ -105,4 +106,4 @@ object MouseLeave : Event {
 }
 
 fun Modifier.onMouseLeave(callback: () -> Unit) =
-    this + MouseLeave.Callback { callback() }
+    this wrap MouseLeave.Callback { callback() }

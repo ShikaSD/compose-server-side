@@ -10,8 +10,8 @@ import me.shika.compose.core.HtmlNode
 import me.shika.compose.core.Modifier
 import me.shika.compose.core.ServerComposer
 import me.shika.compose.core.tag
-import me.shika.compose.event.onClick
 import me.shika.compose.values.attribute
+import me.shika.compose.values.value
 
 suspend fun composition(
     root: HtmlNode,
@@ -48,9 +48,9 @@ fun p(modifier: Modifier = Modifier, children: @Composable() () -> Unit) {
 }
 
 @Composable
-fun button(text: String, modifier: Modifier = Modifier, onClick: () -> Unit) {
-    tag(tagName = "button", modifier = modifier.onClick(onClick)) {
-        me.shika.compose.core.text(text)
+fun button(modifier: Modifier = Modifier, children: @Composable() () -> Unit) {
+    tag(tagName = "button", modifier = modifier) {
+        children()
     }
 }
 
@@ -81,7 +81,7 @@ fun input(
         tagName = "input",
         modifier = modifier
             .attribute("type", type)
-            .attribute("value", value),
+            .value(value),
         children = { }
     )
 

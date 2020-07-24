@@ -4,13 +4,13 @@ interface Modifier {
     fun <R> fold(acc: R, operation: (R, Modifier) -> R): R =
         operation(acc, this)
 
-    operator fun plus(other: Modifier): Modifier =
-        if (other === Modifier) this else CombinedModifier(this, other)
-
     companion object : Modifier {
         override fun <R> fold(acc: R, operation: (R, Modifier) -> R): R = acc
     }
 }
+
+infix fun Modifier.wrap(other: Modifier): Modifier =
+    if (other === Modifier) this else CombinedModifier(this, other)
 
 class CombinedModifier(
     private val outer: Modifier,
