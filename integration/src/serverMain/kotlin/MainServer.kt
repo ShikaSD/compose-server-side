@@ -1,3 +1,4 @@
+import compose.DemoApp
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.http.content.*

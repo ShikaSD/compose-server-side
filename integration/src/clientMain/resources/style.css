@@ -1,7 +1,24 @@
+body * {
+    box-sizing: border-box;
+}
+
 body, html {
     padding: 0;
     margin: 0;
     height: 100%;
+    font-family: sans-serif;
+}
+
+a {
+    color: inherit;
+}
+
+a:visited {
+    color: inherit;
+}
+
+a:pressed {
+    color: inherit;
 }
 
 .compose {
@@ -9,12 +26,17 @@ body, html {
     height: 100%;
 }
 
-.content {
-    display: grid;
+.theme input[type="checkbox"] {
+    display: none;
 }
 
-.main {
-    place-self: center;
+.theme label {
+    display: block;
+    padding: 5px 15px;
+    border-radius: 8px;
+    transition: all 200ms ease-out;
+    transition-property: color, background;
+    margin: 17px 10px;
 }
 
 button.primary {

@@ -1,5 +1,9 @@
 package me.shika.compose.event
 
+import androidx.compose.Composable
+import androidx.compose.getValue
+import androidx.compose.setValue
+import androidx.compose.state
 import me.shika.compose.core.Modifier
 import me.shika.compose.core.wrap
 
@@ -107,3 +111,12 @@ object MouseLeave : Event {
 
 fun Modifier.onMouseLeave(callback: () -> Unit) =
     this wrap MouseLeave.Callback { callback() }
+
+@Composable
+fun Modifier.hover(f: Modifier.(isHovered: Boolean) -> Modifier): Modifier {
+    var mouseOver by state { false }
+
+    return onMouseEnter { mouseOver = true }
+        .onMouseLeave { mouseOver = false }
+        .run { f(mouseOver) }
+}
