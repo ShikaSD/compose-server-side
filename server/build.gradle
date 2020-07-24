@@ -6,7 +6,7 @@ plugins {
 }
 
 configurations.kotlinCompilerClasspath { configuration ->
-    def dep = "org.jetbrains.kotlin:kotlin-compiler-embeddable:1.3.70-dev-withExperimentalGoogleExtensions-20200424"
+    def dep = "org.jetbrains.kotlin:kotlin-compiler-embeddable:1.4.0-dev-withExperimentalGoogleExtensions-20200720"
     withDependencies {
         it -> it.add(project.dependencies.create(dep))
     }
@@ -18,12 +18,12 @@ dependencies {
     implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
     implementation project(':compose-wrapper')
     implementation project(':protocol')
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.7"
-    implementation "io.ktor:ktor-server-core:1.3.2"
-    implementation "io.ktor:ktor-websockets:1.3.2"
-    implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.20.0"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.7-1.4-M3"
+    implementation "io.ktor:ktor-server-core:1.3.2-1.4-M3"
+    implementation "io.ktor:ktor-websockets:1.3.2-1.4-M3"
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.20.0-1.4-M3"
 
-    kotlinCompilerPluginClasspath "androidx.compose:compose-compiler:0.1.0-dev14"
+    kotlinCompilerPluginClasspath "androidx.compose:compose-compiler:0.1.0-dev15"
 }
 
 tasks.withType(KotlinCompile) {

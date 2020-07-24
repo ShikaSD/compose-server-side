@@ -1,7 +1,6 @@
 package screens
 
 import androidx.compose.*
-import androidx.compose.frames.modelListOf
 import me.shika.compose.*
 import me.shika.compose.core.Modifier
 import me.shika.compose.core.text
@@ -10,7 +9,7 @@ import me.shika.compose.event.onClick
 import me.shika.compose.event.onKeyUp
 import me.shika.compose.values.textColor
 
-val messages = modelListOf<String>()
+val messages = mutableStateListOf<String>()
 private const val MESSAGE_LIMIT = 10
 
 fun addMessage(from: String, message: String) {

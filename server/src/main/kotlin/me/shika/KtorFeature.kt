@@ -14,10 +14,9 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.ImplicitReflectionSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
-import kotlinx.serialization.stringify
 import me.shika.compose.RenderCommandDispatcher
-import me.shika.compose.composition
 import me.shika.compose.core.HtmlNode
+import me.shika.compose.core.composition
 import me.shika.compose.event.EventDispatcher
 import me.shika.compose.event.EventDistributor
 import me.shika.compose.event.EventProcessor
@@ -74,7 +73,7 @@ fun Route.compose(
 
         feature.launch {
             commandDispatcher.consumeEach {
-                outgoing.send(Frame.Text(json.stringify(it)))
+                outgoing.send(Frame.Text(json.stringify(RenderCommand.serializer(), it)))
             }
         }
 
