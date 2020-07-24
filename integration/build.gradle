@@ -21,11 +21,14 @@ tasks.withType(KotlinCompile) {
 }
 
 kotlin {
-    js('client').browser()
+    js('client') {
+        browser()
+        binaries.executable()
+    }
     jvm('server') {
         compilations.main {
             tasks.getByName(processResourcesTaskName) {
-                dependsOn(clientJar)
+                dependsOn(clientBrowserWebpack)
                 from(new File(buildDir, "distributions"))
             }
         }
