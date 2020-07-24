@@ -1,26 +1,42 @@
 package androidx.compose
 
-import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.asCoroutineDispatcher
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.launch
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.ThreadFactory
-import java.util.concurrent.TimeUnit
+import kotlin.coroutines.CoroutineContext
 
-actual abstract class EmbeddingUIContext
+actual fun EmbeddingContext(): EmbeddingContext = EmbeddingServerContext
 
-actual class Looper
+object EmbeddingServerContext : EmbeddingContext, CoroutineScope {
+    override val coroutineContext: CoroutineContext = composeThreadDispatcher
 
-internal actual object LooperWrapper {
-    private val mainLooper = Looper()
-    actual fun getMainLooper(): Looper = mainLooper
-}
+    override fun isMainThread(): Boolean =
+        Thread.currentThread() == threadFactory.currentThread
 
-internal actual class Handler actual constructor(looper: Looper) {
-    actual fun post(block: () -> Unit): Boolean {
-        composeThreadExecutor.execute(block)
-        return true
+    override fun mainThreadCompositionContext(): CoroutineContext =
+        coroutineContext
+
+    override fun postOnMainThread(block: () -> Unit) {
+        launch { block() }
+    }
+
+    private val cancelled = mutableSetOf<ChoreographerFrameCallback>()
+
+    override fun postFrameCallback(callback: ChoreographerFrameCallback) {
+        composeThreadExecutor.execute {
+            if (callback !in cancelled) {
+                callback.doFrame(System.nanoTime())
+            } else {
+                cancelled.remove(callback)
+            }
+        }
+    }
+
+    override fun cancelFrameCallback(callback: ChoreographerFrameCallback) {
+        cancelled += callback
     }
 }
 
@@ -34,46 +50,6 @@ private val threadFactory = object : ThreadFactory {
 }
 val composeThreadExecutor: ScheduledExecutorService = Executors.newSingleThreadScheduledExecutor(threadFactory)
 val composeThreadDispatcher = composeThreadExecutor.asCoroutineDispatcher()
-
-internal actual fun isMainThread(): Boolean =
-    Thread.currentThread() == threadFactory.currentThread
-
-internal actual fun mainThreadCompositionDispatcher(): CoroutineDispatcher =
-    composeThreadDispatcher
-
-internal actual fun mainThreadCompositionFrameClock(): CompositionFrameClock =
-    CompositionClock
-
-private object CompositionClock : CompositionFrameClock {
-    override suspend fun <R> withFrameNanos(onFrame: (frameTimeNanos: Long) -> R): R =
-        withContext(composeThreadDispatcher) {
-            onFrame(System.nanoTime())
-        }
-}
-
-internal actual object Choreographer {
-    private val cancelled = mutableSetOf<ChoreographerFrameCallback>()
-
-    actual fun postFrameCallback(callback: ChoreographerFrameCallback) {
-        composeThreadExecutor.execute {
-            if (callback !in cancelled) {
-                callback.doFrame(System.nanoTime())
-            } else {
-                cancelled.remove(callback)
-            }
-        }
-    }
-    actual fun postFrameCallbackDelayed(delayMillis: Long, callback: ChoreographerFrameCallback) {
-        composeThreadExecutor.schedule(
-            { callback.doFrame(System.nanoTime()) },
-            delayMillis,
-            TimeUnit.MILLISECONDS
-        )
-    }
-    actual fun removeFrameCallback(callback: ChoreographerFrameCallback) {
-        cancelled += callback
-    }
-}
 
 actual interface ChoreographerFrameCallback {
     actual fun doFrame(frameTimeNanos: Long)
