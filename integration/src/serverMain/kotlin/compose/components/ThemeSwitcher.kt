@@ -11,15 +11,14 @@ import me.shika.compose.label
 import me.shika.compose.values.*
 
 @Composable
-fun ThemeSwitcher(modifier: Modifier = Modifier, onThemeChanged: (Theme) -> Unit) {
+fun ThemeSwitcher(labelModifier: Modifier = Modifier, onThemeChanged: (Theme) -> Unit) {
     val currentTheme = Theme.Ambient.current
     val targetTheme = when (currentTheme) {
         Theme.DARK -> Theme.LIGHT
         Theme.LIGHT -> Theme.DARK
     }
     div(
-        modifier = modifier
-            .className("theme")
+        modifier = Modifier.className("theme")
     ) {
         checkbox(
             isChecked = currentTheme == Theme.DARK,
@@ -29,7 +28,7 @@ fun ThemeSwitcher(modifier: Modifier = Modifier, onThemeChanged: (Theme) -> Unit
         )
         label(
             text = "Theme",
-            modifier = Modifier
+            modifier = labelModifier
                 .labelFor("theme-switcher")
                 .hover { hovered ->
                     this

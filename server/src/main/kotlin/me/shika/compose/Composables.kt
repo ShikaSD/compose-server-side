@@ -12,8 +12,8 @@ fun div(modifier: Modifier = Modifier, children: @Composable() () -> Unit = {}) 
 }
 
 @Composable
-fun a(modifier: Modifier = Modifier, children: @Composable() () -> Unit) {
-    tag(tagName = "a", modifier.attribute("href", "#"), children)
+fun a(href: String = "#", modifier: Modifier = Modifier, children: @Composable() () -> Unit) {
+    tag(tagName = "a", modifier.attribute("href", href), children)
 }
 
 @Composable
@@ -69,6 +69,11 @@ fun nav(modifier: Modifier, children: @Composable() () -> Unit) {
     tag("nav", modifier) {
         children()
     }
+}
+
+@Composable
+fun br(modifier: Modifier = Modifier) {
+    tag("br", modifier) { }
 }
 
 @Composable

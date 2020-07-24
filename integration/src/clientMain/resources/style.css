@@ -6,7 +6,7 @@ body, html {
     padding: 0;
     margin: 0;
     height: 100%;
-    font-family: sans-serif;
+    font-family: "Menlo", "Consolas", monospace, sans-serif;
 }
 
 a {
@@ -31,17 +31,14 @@ a:pressed {
 }
 
 .theme label {
+    /* todo: move to proper declaration in kotlin code */
     display: block;
     padding: 5px 15px;
     border-radius: 8px;
     transition: all 200ms ease-out;
     transition-property: color, background;
-    margin: 17px 10px;
 }
 
-button.primary {
-    display: block;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 8px;
+h1 {
+    margin: 0;
 }

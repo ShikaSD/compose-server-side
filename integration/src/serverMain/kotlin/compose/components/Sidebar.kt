@@ -27,9 +27,6 @@ fun Sidebar(modifier: Modifier = Modifier, children: @Composable SidebarScope.()
 }
 
 class SidebarScope {
-    fun Modifier.topRight() =
-        style("float", "right")
-
     @Composable
     fun side(children: @Composable() () -> Unit) {
         val theme = Theme.Ambient.current
@@ -49,7 +46,7 @@ class SidebarScope {
             modifier = Modifier
                 .style("flex-grow", "999")
                 .style("flex-basis", "0")
-                .style("padding", "10px")
+                .style("padding", "20px")
         ) {
             children()
         }
@@ -67,7 +64,7 @@ fun SidebarHeader(item: Screen, onMainClick: () -> Unit, onThemeChange: (Theme) 
         a(modifier = Modifier
             .onClick(onMainClick)
             .style("flex-grow", "1")
-            .style("padding", "20px 20px")
+            .style("padding", "25px 20px")
             .style("display", "block")
             .style("text-decoration", "none")
             .style("font-size", Theme.FontSize.MEDIUM)
@@ -75,7 +72,9 @@ fun SidebarHeader(item: Screen, onMainClick: () -> Unit, onThemeChange: (Theme) 
             text(item.description)
         }
 
-        ThemeSwitcher { onThemeChange(it) }
+        ThemeSwitcher(
+            labelModifier = Modifier.style("margin", "22px 20px")
+        ) { onThemeChange(it) }
     }
 }
 

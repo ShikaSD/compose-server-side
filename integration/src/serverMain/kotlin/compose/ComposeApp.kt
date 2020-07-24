@@ -12,6 +12,8 @@ import me.shika.compose.core.Modifier
 import me.shika.compose.div
 import me.shika.compose.values.*
 
+const val GITHUB_BASE_LINK = "https://github.com/ShikaSD/compose-server-side"
+
 enum class Screen(val description: String) {
     MAIN("Home"),
     TODO("Todo app"),
@@ -43,7 +45,7 @@ fun DemoApp() {
 
                 content {
                     when (currentScreen) {
-                        MAIN -> MainScreen(items = listOf(TODO, CHAT), onScreenChange = { currentScreen = it })
+                        MAIN -> MainScreen()
                         TODO -> TodoList()
                         CHAT -> ChatScreen()
                     }

@@ -1,51 +1,29 @@
 package compose.screens
 
 import androidx.compose.Composable
-import compose.Screen
-import compose.Theme
-import me.shika.compose.button
+import compose.GITHUB_BASE_LINK
+import me.shika.compose.*
 import me.shika.compose.core.Modifier
 import me.shika.compose.core.text
-import me.shika.compose.div
-import me.shika.compose.event.hover
-import me.shika.compose.event.onClick
-import me.shika.compose.values.background
-import me.shika.compose.values.className
-import me.shika.compose.values.marginAuto
-import me.shika.compose.values.textColor
-
+import me.shika.compose.values.style
 
 @Composable
-fun Modifier.primaryButtonStyle(theme: Theme): Modifier {
+fun MainScreen() {
+    div(modifier = Modifier.style("line-height", "2")) {
+        h1 {
+            text("Compose server side demo")
+        }
 
-    return className("primary")
-        .textColor(theme.fgColor)
-        .hover {
-            if (it) {
-                background(theme.buttonHovered)
-            } else {
-                background(theme.buttonColor)
+        p {
+            text("Hi, welcome to the demo of running Jetpack Compose on a server.")
+            br()
+            text("You can check different single page examples using navigation on the side.")
+            br()
+            br()
+            text("Don't forget to check out this demo source code on ")
+            a(href = GITHUB_BASE_LINK) {
+                text("GitHub.")
             }
         }
-}
-
-@Composable
-fun MainScreen(items: List<Screen>, onScreenChange: (Screen) -> Unit) {
-    div(modifier = Modifier.className("main")) {
-        items.forEach {
-            PrimaryButton(it, onScreenChange)
-        }
-    }
-}
-
-@Composable
-fun PrimaryButton(item: Screen, onScreenChange: (Screen) -> Unit) {
-    button(
-        modifier = Modifier
-            .primaryButtonStyle(Theme.Ambient.current)
-            .marginAuto()
-            .onClick { onScreenChange(item) }
-    ) {
-        text(item.description)
     }
 }
