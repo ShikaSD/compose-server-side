@@ -82,13 +82,17 @@ private fun MessageList(name: String) {
                 modifier = Modifier
                     .style("overflow", "auto")
                     .style("flex-grow", "1")
-                    .style("display", "flex")
-                    .style("flex-direction", "column")
-                    .style("justify-content", "flex-end")
                     .style("margin-bottom", "10px")
             ) {
-                messages.forEachIndexed { i, message ->
-                    MessageItem(i, message)
+                div(
+                    modifier = Modifier
+                        .style("display", "flex")
+                        .style("flex-flow", "column nowrap")
+                        .style("height", "100%")
+                ) {
+                    messages.forEachIndexed { i, message ->
+                        MessageItem(i, message)
+                    }
                 }
             }
 
@@ -98,10 +102,10 @@ private fun MessageList(name: String) {
             div(Modifier.style("display", "flex")) {
                 Input(
                     inputModifier = Modifier
+                        .attribute("placeholder", "your message")
                         .style("flex-grow", "1")
                         .style("padding", "10px 15px")
                         .style("margin-right", "15px")
-                        .attribute("placeholder", "your message")
                         .style("border", "1px solid ${Theme.Ambient.current.highlight}")
                         .style("border-radius", "8px"),
                     buttonModifier = Modifier
@@ -124,6 +128,9 @@ private fun MessageItem(index: Int, message: Message) {
             .style("font-size", Theme.FontSize.SMALL)
             .style("padding", "10px 5px")
             .background(if (index % 2 == 0) theme.highlight else theme.background)
+            .run {
+                if (index == 0) style("margin-top", "auto") else this
+            }
     ) {
         p(
             modifier = Modifier
@@ -177,7 +184,7 @@ private fun Input(
 }
 
 private val messages = mutableStateListOf<Message>()
-private const val MESSAGE_LIMIT = 100
+private const val MESSAGE_LIMIT = 10
 
 private data class Message(
     val from: String,
