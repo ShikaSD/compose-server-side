@@ -1,11 +1,9 @@
 # ComposeWebUI
 ## ...or kinda server side rendering using compose
 
-Works on dev-14 with minor changes (commit hash: d7bc850db8)
+Works on dev-15 with minor changes.
 
 Now [live on Heroku](https://compose-test-app.herokuapp.com/)!
-
-![demo](images/demo2.gif)
 
 This is a prototype of porting compose to ktor server rather than running it on Android.
 
