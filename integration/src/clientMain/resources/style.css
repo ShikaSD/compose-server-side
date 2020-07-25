@@ -1,7 +1,44 @@
+body * {
+    box-sizing: border-box;
+}
+
 body, html {
     padding: 0;
     margin: 0;
     height: 100%;
+    font-family: "Menlo", "Consolas", monospace, sans-serif;
+}
+
+input {
+    font-family: "Menlo", "Consolas", monospace, sans-serif;
+    border: none;
+    inset: none;
+    background: none;
+    box-shadow: none;
+    outline: none;
+}
+
+button {
+    font-family: "Menlo", "Consolas", monospace, sans-serif;
+    background: none;
+    border: none;
+    outline: none;
+}
+
+button:disabled {
+    opacity: 0.4;
+}
+
+a {
+    color: inherit;
+}
+
+a:visited {
+    color: inherit;
+}
+
+a:pressed {
+    color: inherit;
 }
 
 .compose {
@@ -9,17 +46,19 @@ body, html {
     height: 100%;
 }
 
-.content {
-    display: grid;
+.theme input[type="checkbox"] {
+    display: none;
 }
 
-.main {
-    place-self: center;
-}
-
-button.primary {
+.theme label {
+    /* todo: move to proper declaration in kotlin code */
     display: block;
-    border: none;
-    padding: 5px 10px;
+    padding: 5px 15px;
     border-radius: 8px;
+    transition: all 200ms ease-out;
+    transition-property: color, background;
+}
+
+h1 {
+    margin: 0;
 }

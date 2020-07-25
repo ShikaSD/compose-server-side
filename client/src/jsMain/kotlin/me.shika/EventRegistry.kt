@@ -1,6 +1,7 @@
 package me.shika
 
 import org.w3c.dom.HTMLInputElement
+import org.w3c.dom.HTMLTextAreaElement
 import org.w3c.dom.Node
 import org.w3c.dom.events.EventListener
 import org.w3c.dom.events.KeyboardEvent
@@ -50,21 +51,13 @@ interface EventHandler {
                     }
                 }
                 "change" -> {
-                    if (node is HTMLInputElement) {
-                        EventListener {
-                            sendEvent(mapOf("value" to node.value))
-                        }
-                    } else {
-                        null
+                    EventListener {
+                        sendEvent(mapOf("value" to node.value()))
                     }
                 }
                 "input" -> {
-                    if (node is HTMLInputElement) {
-                        EventListener {
-                            sendEvent(mapOf("value" to node.value))
-                        }
-                    } else {
-                        null
+                    EventListener {
+                        sendEvent(mapOf("value" to node.value()))
                     }
                 }
                 "keyup" -> {
@@ -92,5 +85,12 @@ interface EventHandler {
         override fun removeEvent(name: String, node: Node, listener: Any) {
             node.removeEventListener(name, listener as EventListener)
         }
+
+        private fun Node.value(): String =
+            when (this) {
+                is HTMLInputElement -> value
+                is HTMLTextAreaElement -> value
+                else -> asDynamic().value.toString()
+            }
     }
 }

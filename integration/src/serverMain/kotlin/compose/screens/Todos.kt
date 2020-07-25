@@ -1,4 +1,4 @@
-package screens
+package compose.screens
 
 import androidx.compose.Composable
 import me.shika.compose.core.text

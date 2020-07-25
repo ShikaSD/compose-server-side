@@ -12,8 +12,8 @@ fun div(modifier: Modifier = Modifier, children: @Composable() () -> Unit = {}) 
 }
 
 @Composable
-fun h1(modifier: Modifier = Modifier, children: @Composable() () -> Unit = {}) {
-    tag(tagName = "h1", modifier = modifier, children = children)
+fun a(href: String = "#", modifier: Modifier = Modifier, children: @Composable() () -> Unit) {
+    tag(tagName = "a", modifier.attribute("href", href), children)
 }
 
 @Composable
@@ -29,20 +29,8 @@ fun button(modifier: Modifier = Modifier, children: @Composable() () -> Unit) {
 }
 
 @Composable
-fun checkbox(isChecked: Boolean, modifier: Modifier = Modifier) {
-    tag(
-        tagName = "input",
-        modifier = modifier
-            .attribute("type", "checkbox")
-            .attribute("value", "$isChecked")
-    ) { }
-}
-
-@Composable
-fun label(text: String, modifier: Modifier = Modifier) {
-    tag("label", modifier) {
-        me.shika.compose.core.text(text)
-    }
+fun h1(modifier: Modifier = Modifier, children: @Composable() () -> Unit = {}) {
+    tag(tagName = "h1", modifier = modifier, children = children)
 }
 
 @Composable
@@ -58,6 +46,49 @@ fun input(
             .value(value),
         children = { }
     )
-
 }
 
+@Composable
+fun textarea(
+    modifier: Modifier
+) {
+    tag(
+        tagName = "textarea",
+        modifier = modifier,
+    ) { }
+}
+
+@Composable
+fun checkbox(isChecked: Boolean, modifier: Modifier = Modifier) {
+    input(
+        type = "checkbox",
+        value = "$isChecked",
+        modifier = modifier
+    )
+}
+
+@Composable
+fun label(text: String, modifier: Modifier = Modifier) {
+    tag("label", modifier) {
+        me.shika.compose.core.text(text)
+    }
+}
+
+@Composable
+fun nav(modifier: Modifier, children: @Composable() () -> Unit) {
+    tag("nav", modifier) {
+        children()
+    }
+}
+
+@Composable
+fun br(modifier: Modifier = Modifier) {
+    tag("br", modifier) { }
+}
+
+@Composable
+fun section(modifier: Modifier, children: @Composable() () -> Unit) {
+    tag("section", modifier) {
+        children()
+    }
+}

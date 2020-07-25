@@ -13,5 +13,8 @@ data class Property(
     val value: String?
 ) : Modifier
 
+fun Modifier.property(key: String, value: String): Modifier =
+    this wrap Property(key, value)
+
 fun Modifier.value(text: String): Modifier =
-    this wrap Property("value", text)
+    property("value", text)
