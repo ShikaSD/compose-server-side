@@ -10,7 +10,7 @@ rendering HTML page using websocket commands from server.
 
 Works with dev-15 with minor changes.
 
-### How it works?
+### How does it work?
 
 Server renders a web page, which creates a websocket connection. Then, server pushes updates for 
 adding/removing/replacing HTML nodes on the page, while client is pushing events back. 

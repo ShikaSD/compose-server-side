@@ -27,6 +27,15 @@ fun Modifier.width(value: String): Modifier =
 fun Modifier.height(value: String): Modifier =
     style("height", value)
 
-fun Modifier.marginAuto(): Modifier =
-    style("margin", "auto")
+fun Modifier.fullHeight(): Modifier =
+    height("100%")
+
+fun Modifier.margin(value: String): Modifier =
+    style("margin", value   )
+
+fun Modifier.display(value: String): Modifier =
+    style("display", value)
+
+fun Modifier.textSize(value: String): Modifier =
+    style("font-size", value)
 

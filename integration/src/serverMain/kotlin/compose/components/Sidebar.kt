@@ -1,69 +1,65 @@
 package compose.components
 
 import androidx.compose.Composable
+import compose.GITHUB_BASE_LINK
 import compose.Screen
 import compose.Theme
-import me.shika.compose.a
+import me.shika.compose.*
+import me.shika.compose.FlexScope.weight
 import me.shika.compose.core.Modifier
 import me.shika.compose.core.text
-import me.shika.compose.div
 import me.shika.compose.event.onClick
-import me.shika.compose.nav
-import me.shika.compose.section
-import me.shika.compose.values.background
-import me.shika.compose.values.height
-import me.shika.compose.values.style
-import me.shika.compose.values.width
+import me.shika.compose.values.*
 
 @Composable
 fun Sidebar(modifier: Modifier = Modifier, children: @Composable SidebarScope.() -> Unit) {
-    div(
-        modifier = modifier
-            .style("display", "flex")
-            .height("100%")
-    ) {
-        SidebarScope().apply { children() }
+    Row(modifier = modifier.fullHeight()) {
+        SidebarScope.apply { children() }
     }
 }
 
-class SidebarScope {
+object SidebarScope {
     @Composable
-    fun side(children: @Composable() () -> Unit) {
+    fun side(children: @Composable() FlexScope.() -> Unit) {
         val theme = Theme.Ambient.current
         nav(
             modifier = Modifier
                 .style("flex-basis", "20rem")
-                .style("flex-grow", "1")
+                .weight(1)
                 .style("border-right", "1px solid ${theme.highlight}")
         ) {
-            children()
+            Column(Modifier.fullHeight()) {
+                children()
+            }
         }
     }
 
     @Composable
     fun content(children: @Composable () -> Unit) {
-        section(
-            modifier = Modifier
-                .style("flex-grow", "999")
-                .style("flex-basis", "0")
-                .style("padding", "20px")
-        ) {
-            children()
+        with (FlexScope) {
+            section(
+                modifier = Modifier
+                    .weight(999)
+                    .style("flex-basis", "0")
+                    .style("padding", "20px")
+            ) {
+                children()
+            }
         }
     }
 }
 
 @Composable
-fun SidebarHeader(item: Screen, onMainClick: () -> Unit, onThemeChange: (Theme) -> Unit) {
+fun FlexScope.SidebarHeader(item: Screen, onMainClick: () -> Unit, onThemeChange: (Theme) -> Unit) {
     val theme = Theme.Ambient.current
-    div(Modifier
-        .style("display", "flex")
-        .style("margin-bottom", "20px")
-        .style("border-bottom", "1px solid ${theme.highlight}")
+    Row(
+        modifier = Modifier
+            .style("margin-bottom", "20px")
+            .style("border-bottom", "1px solid ${theme.highlight}")
     ) {
         a(modifier = Modifier
             .onClick(onMainClick)
-            .style("flex-grow", "1")
+            .weight(1)
             .style("padding", "25px 20px")
             .style("display", "block")
             .style("text-decoration", "none")
@@ -79,7 +75,7 @@ fun SidebarHeader(item: Screen, onMainClick: () -> Unit, onThemeChange: (Theme) 
 }
 
 @Composable
-fun SidebarItems(current: Screen, items: List<Screen>, onItemClick: (Screen) -> Unit) {
+fun FlexScope.SidebarItems(current: Screen, items: List<Screen>, onItemClick: (Screen) -> Unit) {
     items.forEach {
         div {
             a(
@@ -98,6 +94,18 @@ fun SidebarItems(current: Screen, items: List<Screen>, onItemClick: (Screen) -> 
             ) {
                 text(it.description)
             }
+        }
+    }
+}
+
+@Composable
+fun FlexScope.SidebarFooter(current: Screen) {
+    div(Modifier.margin("auto auto 25px auto")) {
+        a(
+            href = GITHUB_BASE_LINK + "tree/master/integration/src/serverMain/kotlin/compose/" + current.relativePath,
+            modifier = Modifier.textSize(Theme.FontSize.SMALL)
+        ) {
+            text("Check this screen on Github")
         }
     }
 }
