@@ -49,7 +49,9 @@ private fun NameInput(onNameEntered: (String) -> Unit) {
             inputModifier = Modifier
                 .attribute("placeholder", "enter here")
                 .style("padding", "5px 10px")
-                .style("margin", "5px"),
+                .style("margin", "5px")
+                .style("border", "1px solid ${Theme.Ambient.current.highlight}")
+                .style("border-radius", "8px"),
             buttonModifier = Modifier
                 .style("padding", "5px 10px"),
             buttonText = "Go",
