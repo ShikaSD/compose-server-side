@@ -42,6 +42,8 @@ object SidebarScope {
                     .grow(999)
                     .style("flex-basis", "0")
                     .style("padding", "20px")
+                    .display( "flex")
+                    .style("flex-direction", "column")
             ) {
                 children()
             }

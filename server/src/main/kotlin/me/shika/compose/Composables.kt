@@ -4,6 +4,7 @@ import androidx.compose.Composable
 import me.shika.compose.core.Modifier
 import me.shika.compose.core.tag
 import me.shika.compose.values.attribute
+import me.shika.compose.values.checked
 import me.shika.compose.values.value
 
 @Composable
@@ -63,7 +64,7 @@ fun checkbox(isChecked: Boolean, modifier: Modifier = Modifier) {
     input(
         type = "checkbox",
         value = "$isChecked",
-        modifier = modifier
+        modifier = modifier.checked(isChecked)
     )
 }
 

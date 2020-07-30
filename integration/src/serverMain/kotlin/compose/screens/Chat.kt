@@ -62,7 +62,7 @@ private fun NameInput(onNameEntered: (String) -> Unit) {
 
 @Composable
 private fun MessageList(name: String) {
-    Column {
+    Column(Modifier.style("flex", "1")) {
         h1 {
             text("The chat room")
         }
