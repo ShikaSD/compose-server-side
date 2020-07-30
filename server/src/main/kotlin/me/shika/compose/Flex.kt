@@ -24,7 +24,7 @@ fun Row(modifier: Modifier = Modifier, children: @Composable FlexScope.() -> Uni
 }
 
 object FlexScope {
-    fun Modifier.weight(value: Int) = style("flex-grow", "$value")
+    fun Modifier.grow(value: Int) = style("flex-grow", "$value")
 
     fun Modifier.end() = style("align-self", "flex-end")
 }

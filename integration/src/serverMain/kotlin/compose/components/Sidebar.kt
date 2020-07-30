@@ -5,7 +5,7 @@ import compose.GITHUB_BASE_LINK
 import compose.Screen
 import compose.Theme
 import me.shika.compose.*
-import me.shika.compose.FlexScope.weight
+import me.shika.compose.FlexScope.grow
 import me.shika.compose.core.Modifier
 import me.shika.compose.core.text
 import me.shika.compose.event.onClick
@@ -25,7 +25,7 @@ object SidebarScope {
         nav(
             modifier = Modifier
                 .style("flex-basis", "20rem")
-                .weight(1)
+                .grow(1)
                 .style("border-right", "1px solid ${theme.highlight}")
         ) {
             Column(Modifier.fullHeight()) {
@@ -39,7 +39,7 @@ object SidebarScope {
         with (FlexScope) {
             section(
                 modifier = Modifier
-                    .weight(999)
+                    .grow(999)
                     .style("flex-basis", "0")
                     .style("padding", "20px")
             ) {
@@ -59,7 +59,7 @@ fun FlexScope.SidebarHeader(item: Screen, onMainClick: () -> Unit, onThemeChange
     ) {
         a(modifier = Modifier
             .onClick(onMainClick)
-            .weight(1)
+            .grow(1)
             .style("padding", "25px 20px")
             .style("display", "block")
             .style("text-decoration", "none")

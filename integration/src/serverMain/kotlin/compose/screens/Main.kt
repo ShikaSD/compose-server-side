@@ -24,7 +24,7 @@ fun MainScreen() {
             a(href = GITHUB_BASE_LINK) {
                 text("GitHub")
             }
-            text(" or using the links at the bottom of the sidebar.")
+            text(" or using links at the bottom of the sidebar.")
             br()
             br()
             text("You can also use browser console to check what data is sent between client and server.")
