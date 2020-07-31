@@ -56,7 +56,7 @@ interface EventProcessor {
 
 class EventDistributor(
     private val dispatcher: EventDispatcher,
-    private val processor: EventProcessor = EventProcessor
+    private val processor: EventProcessor = EventProcessor.Default
 ) {
     fun evaluate(event: ClientEvent) {
         val payload = processor.process(event)

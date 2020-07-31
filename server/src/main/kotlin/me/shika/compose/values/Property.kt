@@ -18,3 +18,6 @@ fun Modifier.property(key: String, value: String): Modifier =
 
 fun Modifier.value(text: String): Modifier =
     property("value", text)
+
+fun Modifier.checked(value: Boolean): Modifier =
+    property("checked", if (value) "checked" else "")

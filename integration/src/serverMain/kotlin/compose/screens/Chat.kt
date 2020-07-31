@@ -9,10 +9,7 @@ import me.shika.compose.event.hover
 import me.shika.compose.event.onClick
 import me.shika.compose.event.onInput
 import me.shika.compose.event.onKeyUp
-import me.shika.compose.values.attribute
-import me.shika.compose.values.background
-import me.shika.compose.values.style
-import me.shika.compose.values.textColor
+import me.shika.compose.values.*
 
 @Composable
 fun ChatScreen() {
@@ -28,8 +25,15 @@ fun ChatScreen() {
 
 @Composable
 private fun NameInput(onNameEntered: (String) -> Unit) {
-    h1 { text("Chat room") }
-    p { text("To enter chat room you need to log in first.") }
+    h1 { text("Welcome to (quite limited) chat room") }
+    p(modifier = Modifier.style("line-height", "2")) {
+        text("Try to type some messages and check if you see them. Note, that they are not persisted, so server restart will wipe them out.")
+        br()
+        text("If this room is empty (happens because Heroku), you can open another window and send messages from there.")
+    }
+    br()
+    h1 { text("Let's start") }
+    p { text("To enter chat room you need to log in first:") }
 
     div {
         p(
@@ -45,7 +49,9 @@ private fun NameInput(onNameEntered: (String) -> Unit) {
             inputModifier = Modifier
                 .attribute("placeholder", "enter here")
                 .style("padding", "5px 10px")
-                .style("margin", "5px"),
+                .style("margin", "5px")
+                .style("border", "1px solid ${Theme.Ambient.current.highlight}")
+                .style("border-radius", "8px"),
             buttonModifier = Modifier
                 .style("padding", "5px 10px"),
             buttonText = "Go",
@@ -56,64 +62,39 @@ private fun NameInput(onNameEntered: (String) -> Unit) {
 
 @Composable
 private fun MessageList(name: String) {
-    div(
-        modifier = Modifier
-            .style("height", "100%")
-            .style("display", "flex")
-            .style("flex-direction", "column")
-    ) {
-        h1 { text("Welcome to (quite limited) chat room") }
-        p(modifier = Modifier.style("line-height", "2")) {
-            text("Try to type some messages and check if you see them. Note, that they are not persisted, so server restart will wipe them out.")
-            br()
-            text("If this room is empty (happens because Heroku), you can open another window and send messages from there.")
-            br()
+    Column(Modifier.style("flex", "1")) {
+        h1 {
+            text("The chat room")
+        }
+        p {
             text("This room support maximum of $MESSAGE_LIMIT messages, and now ${messages.size} is already here. Old messages will be removed when you send new ones :)")
         }
-
-        div(
-            modifier = Modifier
-                .style("display", "flex")
-                .style("flex-direction", "column")
-                .style("flex-grow", "1")
-                .style("overflow", "hidden")
+        Column(modifier = Modifier
+            .grow(1)
+            .style("margin-bottom", "10px")
         ) {
-            div(
-                modifier = Modifier
-                    .style("overflow", "auto")
-                    .style("flex-grow", "1")
-                    .style("margin-bottom", "10px")
-            ) {
-                div(
-                    modifier = Modifier
-                        .style("display", "flex")
-                        .style("flex-flow", "column nowrap")
-                        .style("height", "100%")
-                ) {
-                    messages.forEachIndexed { i, message ->
-                        MessageItem(i, message)
-                    }
-                }
+            messages.forEachIndexed { i, message ->
+                MessageItem(i, message)
             }
+        }
 
-            p(Modifier.style("font-size", Theme.FontSize.SMALL).style("margin", "5px")) {
-                text("Your message as $name:")
-            }
-            div(Modifier.style("display", "flex")) {
-                Input(
-                    inputModifier = Modifier
-                        .attribute("placeholder", "your message")
-                        .style("flex-grow", "1")
-                        .style("padding", "10px 15px")
-                        .style("margin-right", "15px")
-                        .style("border", "1px solid ${Theme.Ambient.current.highlight}")
-                        .style("border-radius", "8px"),
-                    buttonModifier = Modifier
-                        .style("padding", "0 10px"),
-                    buttonText = "Send"
-                ) {
-                    addMessage(Message(name, it))
-                }
+        p(Modifier.textSize(Theme.FontSize.SMALL).margin("5px")) {
+            text("Your message as $name:")
+        }
+        Row {
+            Input(
+                inputModifier = Modifier
+                    .attribute("placeholder", "your message")
+                    .grow(1)
+                    .style("padding", "10px 15px")
+                    .style("margin-right", "15px")
+                    .style("border", "1px solid ${Theme.Ambient.current.highlight}")
+                    .style("border-radius", "8px"),
+                buttonModifier = Modifier
+                    .style("padding", "0 10px"),
+                buttonText = "Send"
+            ) {
+                addMessage(Message(name, it))
             }
         }
     }

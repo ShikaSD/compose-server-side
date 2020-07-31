@@ -3,6 +3,7 @@ package compose
 import androidx.compose.*
 import compose.Screen.*
 import compose.components.Sidebar
+import compose.components.SidebarFooter
 import compose.components.SidebarHeader
 import compose.components.SidebarItems
 import compose.screens.ChatScreen
@@ -12,12 +13,12 @@ import me.shika.compose.core.Modifier
 import me.shika.compose.div
 import me.shika.compose.values.*
 
-const val GITHUB_BASE_LINK = "https://github.com/ShikaSD/compose-server-side"
+const val GITHUB_BASE_LINK = "https://github.com/ShikaSD/compose-server-side/"
 
-enum class Screen(val description: String) {
-    MAIN("Home"),
-    TODO("Todo app"),
-    CHAT("Chat room")
+enum class Screen(val description: String, val relativePath: String) {
+    MAIN("Home", "screens/Main.kt"),
+    TODO("Todo app", "screens/Todos.kt"),
+    CHAT("Chat room", "screens/Chat.kt")
 }
 
 @Composable
@@ -41,6 +42,7 @@ fun DemoApp() {
                         items = listOf(TODO, CHAT),
                         onItemClick = { currentScreen = it }
                     )
+                    SidebarFooter(currentScreen)
                 }
 
                 content {

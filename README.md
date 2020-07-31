@@ -1,18 +1,16 @@
 # ComposeWebUI
 ## ...or kinda server side rendering using compose
 
-Works on dev-14 with minor changes (commit hash: d7bc850db8)
-
 Now [live on Heroku](https://compose-test-app.herokuapp.com/)!
-
-![demo](images/demo2.gif)
 
 This is a prototype of porting compose to ktor server rather than running it on Android.
 
 The original idea belongs to [SwiftWebUI](https://github.com/SwiftWebUI/SwiftWebUI) project,
 rendering HTML page using websocket commands from server.
 
-### How it works?
+Works with dev-15 with minor changes.
+
+### How does it work?
 
 Server renders a web page, which creates a websocket connection. Then, server pushes updates for 
 adding/removing/replacing HTML nodes on the page, while client is pushing events back. 

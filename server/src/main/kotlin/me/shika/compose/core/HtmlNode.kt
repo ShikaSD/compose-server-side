@@ -52,6 +52,7 @@ sealed class HtmlNode {
                 this.styles = styles
                 this.attributes = attributes
                 this.events = events
+                this.properties = properties
             }
 
         internal var events: Map<Event, Event.Callback<*, *>> = emptyMap()
@@ -106,7 +107,7 @@ sealed class HtmlNode {
         }
 
         override fun toString(): String =
-            "Tag(id=$id, tag=$tag, events=$events, attrs=$attributes, styles=$styles)"
+            "Tag(id=$id, tag=$tag, events=$events, attrs=$attributes, styles=$styles, properties=$properties)"
     }
 
     class Text(private val commandDispatcher: RenderCommandDispatcher): HtmlNode() {
