@@ -34,6 +34,6 @@ TODO: link to article
 ### Building it
 You can use `deploy` branch with prebuilt artifacts of runtime.
 
-`integration` module, contains full stack implementation of actual app. Ideally, this is the one you could write if this library will be ever published.
+`integration` module contains implementation of an on both JS and server side. Ideally, this is the part you could write if this library will be ever published.
 
 The Ktor feature with all the definitions is in the `server` module and browser runtime is in the `client` one.
