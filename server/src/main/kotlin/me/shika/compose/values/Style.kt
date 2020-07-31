@@ -39,3 +39,6 @@ fun Modifier.display(value: String): Modifier =
 fun Modifier.textSize(value: String): Modifier =
     style("font-size", value)
 
+fun Modifier.lineHeight(value: Float): Modifier =
+    style("line-height", value.toString())
+

@@ -10,6 +10,7 @@ import me.shika.compose.event.onClick
 import me.shika.compose.event.onInput
 import me.shika.compose.event.onKeyUp
 import me.shika.compose.values.attribute
+import me.shika.compose.values.lineHeight
 import me.shika.compose.values.style
 import me.shika.compose.values.textColor
 
@@ -18,7 +19,7 @@ data class Todo(val text: String, val isDone: Boolean)
 @Composable
 fun TodoList() {
     h1 { text("TodoList") }
-    p(modifier = Modifier.style("line-height", "1.5")) {
+    p(modifier = Modifier.lineHeight(1.5f)) {
         text("Classic example interacting with a list of items.")
         br()
         text("Use input below to add more items to a list (submit using Enter)")
