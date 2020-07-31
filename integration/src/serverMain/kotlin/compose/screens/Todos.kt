@@ -11,6 +11,7 @@ import me.shika.compose.event.onInput
 import me.shika.compose.event.onKeyUp
 import me.shika.compose.values.attribute
 import me.shika.compose.values.style
+import me.shika.compose.values.textColor
 
 data class Todo(val text: String, val isDone: Boolean)
 
@@ -87,6 +88,7 @@ fun TodoInput(onSubmit: (String) -> Unit) {
             .style("padding", "10px")
             .style("border", "1px solid ${Theme.Ambient.current.highlight}")
             .style("margin-bottom", "15px")
+            .textColor(Theme.Ambient.current.foreground)
             .onInput { inputValue = it }
             .onKeyUp {
                 if (it == "Enter") {
