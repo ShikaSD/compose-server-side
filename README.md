@@ -29,7 +29,15 @@ fun Application.module() {
 ```
 
 ### How does it work?
-**TLDR;** Compose + Websocket goes brrrr
+#### **TLDR;** Compose + Websocket goes brrrr
+
+![Scheme](images/scheme.png)
+
+- Compose starts with some initial state which results in the server-side representation of a webpage.
+- This representation is sent to the client as commands of adding/removing/moving nodes through websocket. 
+  The client then changes the structure of the webpage according to commands received from the server.
+- When a client event happens (for example click), it is sent to the server. Here, the state is updated with the new changes. 
+  It yields a different structure of the DOM, and these updates are sent to the client, refreshing the webpage.
 
 Full story [on Medium](https://medium.com/@shikasd/composing-in-the-wild-145761ad62c3?source=friends_link&sk=1ea110938835f2ad11c7a2b39e5deac1).
 
