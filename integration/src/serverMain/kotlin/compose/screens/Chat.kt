@@ -137,12 +137,15 @@ private fun Input(
     val theme = Theme.Ambient.current
 
     fun send() {
-        text.submit { onSubmit(it) }
+        if (text.value.isNotBlank()) {
+            onSubmit(text.value)
+            text.reset()
+        }
     }
 
     input(
         type = "text",
-        value = text.value,
+        value = text.compositionValue(),
         modifier = inputModifier
             .textColor(theme.foreground)
             .onInput { text.value = it }

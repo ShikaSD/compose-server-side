@@ -1,27 +1,24 @@
 package compose.components
 
-import androidx.compose.MutableState
-import androidx.compose.mutableStateOf
+import androidx.compose.Composable
+import androidx.compose.invalidate
 
 /**
- * Emulates Compose state without triggering recompose until submit, where it recomposes with initial value
+ * Emulates Compose state without triggering recompose until reset, where it recomposes with initial value
  */
 class InputState(
-    private val initialValue: String,
-    private val remoteState: MutableState<String> = mutableStateOf(initialValue)
-) : MutableState<String> by remoteState {
-    private var localState: String = initialValue
+    private val initialValue: String
+) {
+    var value: String = initialValue
+    private var invalidateValue: () -> Unit = {  }
 
-    override var value: String
-        get() = remoteState.value
-        set(value) { localState = value }
+    @Composable
+    fun compositionValue(): String = value.also {
+        invalidateValue = invalidate
+    }
 
-    fun submit(callback: (String) -> Unit) {
-        if (localState.isBlank()) return
-
-        callback(localState)
-        remoteState.value = localState
-        localState = initialValue
-        remoteState.value = initialValue
+    fun reset() {
+        value = initialValue
+        invalidateValue()
     }
 }

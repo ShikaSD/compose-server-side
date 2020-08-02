@@ -83,10 +83,15 @@ fun TodoItem(model: Todo, onCompleted: () -> Unit, onRemoved: () -> Unit) {
 @Composable
 fun TodoInput(onSubmit: (String) -> Unit) {
     val inputValue = remember { InputState("") }
-    println(inputValue.value)
+    fun submit() {
+        if (inputValue.value.isNotBlank()) {
+            onSubmit(inputValue.value)
+            inputValue.reset()
+        }
+    }
     input(
         type = "text",
-        value = inputValue.value,
+        value = inputValue.compositionValue(),
         modifier = Modifier
             .attribute("placeholder", "what needs to be done?")
             .style("border-radius", "8px")
@@ -97,7 +102,7 @@ fun TodoInput(onSubmit: (String) -> Unit) {
             .onInput { inputValue.value = it }
             .onKeyUp {
                 if (it == "Enter") {
-                    inputValue.submit(onSubmit)
+                    submit()
                 }
             }
     )
