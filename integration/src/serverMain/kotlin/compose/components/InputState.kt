@@ -13,10 +13,8 @@ class InputState<T>(
     private var localState: T = initialValue
 
     override var value: T
-        get() = remoteState.value
-        set(value) {
-            localState = value
-        }
+        get() = localState
+        set(value) { localState = value }
 
     fun submit(callback: (T) -> Unit) {
         remoteState.value = localState
