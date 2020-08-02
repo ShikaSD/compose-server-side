@@ -29,7 +29,9 @@ fun Application.module() {
 ```
 
 ### How does it work?
-TODO: link to article
+**TLDR;** Compose + Websocket goes brrrr
+
+Full story [on Medium](https://medium.com/@shikasd/composing-in-the-wild-145761ad62c3?source=friends_link&sk=1ea110938835f2ad11c7a2b39e5deac1).
 
 ### Building it
 You can use `deploy` branch with prebuilt artifacts of runtime.
