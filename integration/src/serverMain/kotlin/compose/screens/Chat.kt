@@ -137,9 +137,7 @@ private fun Input(
     val theme = Theme.Ambient.current
 
     fun send() {
-        if (text.value.isNotBlank()) {
-            text.submit { onSubmit(it) }
-        }
+        text.submit { onSubmit(it) }
     }
 
     input(
@@ -151,16 +149,27 @@ private fun Input(
             .onKeyUp { if (it == "Enter") send() }
     )
 
+    InputButton(
+        modifier = buttonModifier,
+        text = buttonText
+    ) {
+        send()
+    }
+}
+
+@Composable
+private fun InputButton(modifier: Modifier, text: String, onClick: () -> Unit) {
+    val theme = Theme.Ambient.current
     button(
-        modifier = buttonModifier
-            .onClick { send() }
+        modifier = modifier
+            .onClick(onClick)
             .hover {
                 background(if (it) theme.accentHighlight else theme.accent)
             }
             .style("border-radius", "8px")
             .textColor(theme.white)
     ) {
-        text(buttonText)
+        text(text)
     }
 }
 

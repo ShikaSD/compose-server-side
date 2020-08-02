@@ -83,6 +83,7 @@ fun TodoItem(model: Todo, onCompleted: () -> Unit, onRemoved: () -> Unit) {
 @Composable
 fun TodoInput(onSubmit: (String) -> Unit) {
     val inputValue = remember { InputState("") }
+    println(inputValue.value)
     input(
         type = "text",
         value = inputValue.value,

@@ -6,20 +6,22 @@ import androidx.compose.mutableStateOf
 /**
  * Emulates Compose state without triggering recompose until submit, where it recomposes with initial value
  */
-class InputState<T>(
-    private val initialValue: T,
-    private val remoteState: MutableState<T> = mutableStateOf(initialValue)
-) : MutableState<T> by remoteState {
-    private var localState: T = initialValue
+class InputState(
+    private val initialValue: String,
+    private val remoteState: MutableState<String> = mutableStateOf(initialValue)
+) : MutableState<String> by remoteState {
+    private var localState: String = initialValue
 
-    override var value: T
-        get() = localState
+    override var value: String
+        get() = remoteState.value
         set(value) { localState = value }
 
-    fun submit(callback: (T) -> Unit) {
+    fun submit(callback: (String) -> Unit) {
+        if (localState.isBlank()) return
+
+        callback(localState)
         remoteState.value = localState
-        callback(remoteState.value)
-        remoteState.value = initialValue
         localState = initialValue
+        remoteState.value = initialValue
     }
 }
