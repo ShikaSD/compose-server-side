@@ -1,7 +1,10 @@
 package compose.screens
 
-import androidx.compose.*
+import androidx.compose.Composable
+import androidx.compose.mutableStateListOf
+import androidx.compose.remember
 import compose.Theme
+import compose.components.InputState
 import me.shika.compose.*
 import me.shika.compose.core.Modifier
 import me.shika.compose.core.text
@@ -79,10 +82,10 @@ fun TodoItem(model: Todo, onCompleted: () -> Unit, onRemoved: () -> Unit) {
 
 @Composable
 fun TodoInput(onSubmit: (String) -> Unit) {
-    var inputValue by state { "" }
+    val inputValue = remember { InputState("") }
     input(
         type = "text",
-        value = inputValue,
+        value = inputValue.value,
         modifier = Modifier
             .attribute("placeholder", "what needs to be done?")
             .style("border-radius", "8px")
@@ -90,11 +93,10 @@ fun TodoInput(onSubmit: (String) -> Unit) {
             .style("border", "1px solid ${Theme.Ambient.current.highlight}")
             .style("margin-bottom", "15px")
             .textColor(Theme.Ambient.current.foreground)
-            .onInput { inputValue = it }
+            .onInput { inputValue.value = it }
             .onKeyUp {
                 if (it == "Enter") {
-                    onSubmit(inputValue)
-                    inputValue = ""
+                    inputValue.submit(onSubmit)
                 }
             }
     )

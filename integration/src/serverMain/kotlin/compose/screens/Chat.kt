@@ -2,6 +2,7 @@ package compose.screens
 
 import androidx.compose.*
 import compose.Theme
+import compose.components.InputState
 import me.shika.compose.*
 import me.shika.compose.core.Modifier
 import me.shika.compose.core.text
@@ -132,22 +133,21 @@ private fun Input(
     buttonText: String,
     onSubmit: (message: String) -> Unit
 ) {
-    var text by state { "" }
+    val text = remember { InputState("") }
     val theme = Theme.Ambient.current
 
     fun send() {
-        if (text.isNotBlank()) {
-            onSubmit(text)
-            text = ""
+        if (text.value.isNotBlank()) {
+            text.submit { onSubmit(it) }
         }
     }
 
     input(
         type = "text",
-        value = text,
+        value = text.value,
         modifier = inputModifier
             .textColor(theme.foreground)
-            .onInput { text = it }
+            .onInput { text.value = it }
             .onKeyUp { if (it == "Enter") send() }
     )
 
