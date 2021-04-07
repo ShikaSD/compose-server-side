@@ -9,7 +9,7 @@ kotlin {
         jsMain {
             dependencies {
                 implementation "org.jetbrains.kotlin:kotlin-stdlib-js"
-                implementation project(':protocol')
+                implementation project(':common:protocol')
                 implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime-js:0.20.0-1.4-M3"
             }
         }

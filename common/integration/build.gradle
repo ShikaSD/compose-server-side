@@ -41,13 +41,13 @@ kotlin {
         clientMain {
             dependencies {
                 implementation kotlin('stdlib-js')
-                implementation project(':client')
+                implementation project(':web:client')
             }
         }
         serverMain {
             dependencies {
                 implementation kotlin('stdlib-jdk8')
-                implementation project(':server')
+                implementation project(':web:server')
                 implementation fileTree("../compose-wrapper/built/")
 
                 implementation "org.jetbrains.kotlinx:kotlinx-collections-immutable-jvm:0.3"
@@ -64,7 +64,7 @@ kotlin {
 task copyServerLibs(type: Copy) {
     into "$buildDir/server"
     from(configurations.serverRuntimeClasspath)
-    from(project(':compose-wrapper').configurations.jvmRuntimeClasspath)
+    from(project(':common:compose-wrapper').configurations.jvmRuntimeClasspath)
 }
 
 task stage(dependsOn: ['assemble', 'clean', 'copyServerLibs'])
