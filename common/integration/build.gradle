@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
     id 'org.jetbrains.kotlin.multiplatform'
 }
@@ -11,12 +9,6 @@ configurations.kotlinCompilerClasspath { configuration ->
     }
     .resolutionStrategy
     .force(dep)
-}
-
-tasks.withType(KotlinCompile) {
-    kotlinOptions {
-        useIR = true
-    }
 }
 
 kotlin {

@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
     id 'org.jetbrains.kotlin.multiplatform'
 }
@@ -13,10 +11,6 @@ configurations.kotlinCompilerClasspath { configuration ->
 
 dependencies {
     kotlinCompilerPluginClasspath "androidx.compose:compose-compiler:0.1.0-dev15"
-}
-
-project.tasks.withType(KotlinCompile.class).configureEach { compile ->
-    compile.kotlinOptions.useIR = true
 }
 
 kotlin {

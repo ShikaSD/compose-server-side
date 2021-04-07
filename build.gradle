@@ -1,10 +1,71 @@
 buildscript {
-    Properties properties = new Properties()
-    def propertiesFile = project.rootProject.file('local.properties')
-    if (propertiesFile.exists()) {
-        properties.load(propertiesFile.newDataInputStream())
+    ext {
+        Properties properties = new Properties()
+        def propertiesFile = project.rootProject.file('local.properties')
+        if (propertiesFile.exists()) {
+            properties.load(propertiesFile.newDataInputStream())
+        }
+        aosp_location = properties.getProperty('aosp.location')
+        android_build_tool_version = '4.0.1'
+        kotlin_version = "1.4-M3"
+//        - Android Compose
+        android_compose_appcompat_version = '1.3.0-beta01'
+        android_compose_activity_version = '1.3.0-alpha02'
+//        - Jetpack Compose - shared UI
+        jb_compose_version = '0.3.2'
+
+        //collections-immutable
+        coroutines_core_version = '1.3.7-1.4-M3'
+        collections_immutable_version = '0.3'
+        ktor_version = '1.3.2-1.4-M3'
+        kotlin_serialization_version = '1.4-M3'
+        serialization_runtime= '0.20.0-1.4-M3'
     }
-    ext.aosp_location = properties.getProperty('aosp.location')
+
+    repositories {
+        google()
+        mavenCentral()
+        jcenter()
+        gradlePluginPortal()
+        maven {
+            url = 'file://' + new File(System.getProperty('user.home'), '.m2/repository').absolutePath
+        }
+        //JB_Kotlin_Multiplatform
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+
+        maven {
+            url = "https://dl.bintray.com/kotlin/kotlin-eap"
+        }
+        maven {
+            url = "https://dl.bintray.com/kotlin/kotlin-dev"
+        }
+        //JB_Compose
+        maven {
+            url = "https://maven.pkg.jetbrains.space/public/p/compose/dev"
+        }
+//        // kotlin-DSL
+//        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+    }
+    dependencies {
+        classpath "com.android.tools.build:gradle:${android_build_tool_version}"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        //JB_Kotlin_Multiplatform
+//        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.0-M2"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_serialization_version"
+
+        //Test
+        classpath "org.jetbrains.kotlin:kotlin-test-common:$kotlin_version"
+        classpath "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
+        classpath "org.jetbrains.kotlin:kotlin-test-annotations-common:$kotlin_version"
+
+        //JB_Compose
+        classpath "org.jetbrains.compose:compose-gradle-plugin:$jb_compose_version"
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
 }
 
 plugins {
@@ -41,6 +102,12 @@ allprojects {
     tasks.withType(org.jetbrains.kotlin.gradle.tasks.AbstractKotlinCompile) {
         kotlinOptions {
             freeCompilerArgs += ["-Xskip-prerelease-check"]
+        }
+    }
+
+    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile) {
+        kotlinOptions {
+            useIR = true
         }
     }
 }
