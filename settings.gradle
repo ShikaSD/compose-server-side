@@ -1,7 +1,25 @@
 pluginManagement {
     repositories {
+        google()
+        mavenCentral()
+        jcenter()
         gradlePluginPortal()
         maven { url "https://dl.bintray.com/kotlin/kotlin-eap" }
+        //JB_Kotlin_Multiplatform
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+
+        maven {
+            url = "https://dl.bintray.com/kotlin/kotlin-eap"
+        }
+        maven {
+            url = "https://dl.bintray.com/kotlin/kotlin-dev"
+        }
+        //JB_Compose
+        maven {
+            url = "https://maven.pkg.jetbrains.space/public/p/compose/dev"
+        }
     }
 }
 
