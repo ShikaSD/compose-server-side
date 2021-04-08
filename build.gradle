@@ -19,6 +19,8 @@ buildscript {
         collections_immutable_version = '0.3'
         ktor_version = '1.3.2-1.4-M3'
         kotlin_serialization_version = '1.4-M3'
+        //Ref : https://blog.csdn.net/vitaviva/article/details/104779479
+        //Ref : https://blog.csdn.net/weixin_44761758/article/details/89536909?utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-1.control&dist_request_id=1329187.9314.16178509973458491&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-1.control
         serialization_runtime= '0.20.0-1.4-M3'
     }
 

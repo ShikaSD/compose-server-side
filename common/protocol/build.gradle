@@ -11,21 +11,21 @@ kotlin {
         commonMain {
             dependencies {
                 implementation kotlin('stdlib-common')
-                implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.20.0-1.4-M3"
+                implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:$serialization_runtime"
             }
         }
 
         jsMain {
             dependencies {
                 implementation kotlin('stdlib-js')
-                implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime-js:0.20.0-1.4-M3"
+                implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime-js:$serialization_runtime"
             }
         }
 
         jvmMain {
             dependencies {
                 implementation kotlin('stdlib-jdk8')
-                implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.20.0-1.4-M3"
+                implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:$serialization_runtime"
             }
         }
     }
