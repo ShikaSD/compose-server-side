@@ -26,7 +26,9 @@ kotlin {
     }
 
     dependencies {
-        kotlinCompilerPluginClasspath "androidx.compose:compose-compiler:0.1.0-dev15"
+//        kotlinCompilerPluginClasspath "androidx.compose:compose-compiler:0.1.0-dev15"
+//        kotlinCompilerPluginClasspath "androidx.compose:compose-compiler:1.0.0-beta03"
+        add("kotlinCompilerPluginClasspath", "androidx.compose.compiler:compiler:$compose_version")
     }
 
     sourceSets {
