@@ -1,0 +1,30 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm'
+    id 'application'
+}
+
+configurations.kotlinCompilerClasspath { configuration ->
+    def dep = "org.jetbrains.kotlin:kotlin-compiler-embeddable:1.4.0-dev-withExperimentalGoogleExtensions-20200720"
+    withDependencies {
+        it -> it.add(project.dependencies.create(dep))
+    }
+    .resolutionStrategy
+    .force(dep)
+}
+
+dependencies {
+    implementation fileTree("../../common/compose-wrapper/built/")
+    implementation project(':common:protocol')
+
+    kotlinCompilerPluginClasspath "androidx.compose:compose-compiler:0.1.0-dev15"
+
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
+
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_core_version"
+
+    implementation "io.ktor:ktor-server-core:$ktor_version"
+    implementation "io.ktor:ktor-websockets:$ktor_version"
+
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:$serialization_runtime"
+}
+

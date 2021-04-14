@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
     id 'org.jetbrains.kotlin.multiplatform'
 }
@@ -11,12 +9,6 @@ configurations.kotlinCompilerClasspath { configuration ->
     }
     .resolutionStrategy
     .force(dep)
-}
-
-tasks.withType(KotlinCompile) {
-    kotlinOptions {
-        useIR = true
-    }
 }
 
 kotlin {
@@ -34,26 +26,29 @@ kotlin {
     }
 
     dependencies {
-        kotlinCompilerPluginClasspath "androidx.compose:compose-compiler:0.1.0-dev15"
+//        kotlinCompilerPluginClasspath "androidx.compose:compose-compiler:0.1.0-dev15"
+//        kotlinCompilerPluginClasspath "androidx.compose:compose-compiler:1.0.0-beta03"
+        add("kotlinCompilerPluginClasspath", "androidx.compose.compiler:compiler:$compose_version")
     }
 
     sourceSets {
         clientMain {
             dependencies {
                 implementation kotlin('stdlib-js')
-                implementation project(':client')
+                implementation project(':web:client')
             }
         }
         serverMain {
             dependencies {
                 implementation kotlin('stdlib-jdk8')
-                implementation project(':server')
+                implementation project(':web:server')
                 implementation fileTree("../compose-wrapper/built/")
 
                 implementation "org.jetbrains.kotlinx:kotlinx-collections-immutable-jvm:0.3"
-                implementation "io.ktor:ktor-server-core:1.3.2-1.4-M3"
-                implementation "io.ktor:ktor-server-netty:1.3.2-1.4-M3"
-                implementation "io.ktor:ktor-websockets:1.3.2-1.4-M3"
+                implementation "io.ktor:ktor-server-core:$ktor_version"
+                implementation "io.ktor:ktor-server-netty:$ktor_version"
+                implementation "io.ktor:ktor-websockets:$ktor_version"
+                //Log
                 implementation "ch.qos.logback:logback-classic:1.2.3"
             }
         }
@@ -64,7 +59,7 @@ kotlin {
 task copyServerLibs(type: Copy) {
     into "$buildDir/server"
     from(configurations.serverRuntimeClasspath)
-    from(project(':compose-wrapper').configurations.jvmRuntimeClasspath)
+    from(project(':common:compose-wrapper').configurations.jvmRuntimeClasspath)
 }
 
 task stage(dependsOn: ['assemble', 'clean', 'copyServerLibs'])
